@@ -24,8 +24,12 @@ public interface VirtualNoAppParametersMapper extends io.vertx.sqlclient.templat
     params.put("appId", obj.getAppId());
     params.put("appKey", obj.getAppKey());
     params.put("appName", obj.getAppName());
-    params.put("id", obj.getId());
+    params.put("createdBy", obj.getCreatedBy());
+    params.put("createdDate", obj.getCreatedDate());
+    params.put("idVirtualnoAppInfo", obj.getIdVirtualnoAppInfo());
     params.put("secret", obj.getSecret());
+    params.put("updatedBy", obj.getUpdatedBy());
+    params.put("updatedDate", obj.getUpdatedDate());
     return params;
   }
 }

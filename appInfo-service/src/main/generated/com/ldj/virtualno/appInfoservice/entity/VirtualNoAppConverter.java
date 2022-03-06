@@ -35,14 +35,24 @@ public class VirtualNoAppConverter {
             obj.setAppName((String)member.getValue());
           }
           break;
-        case "id":
+        case "createdBy":
           if (member.getValue() instanceof String) {
-            obj.setId((String)member.getValue());
+            obj.setCreatedBy((String)member.getValue());
+          }
+          break;
+        case "idVirtualnoAppInfo":
+          if (member.getValue() instanceof String) {
+            obj.setIdVirtualnoAppInfo((String)member.getValue());
           }
           break;
         case "secret":
           if (member.getValue() instanceof String) {
             obj.setSecret((String)member.getValue());
+          }
+          break;
+        case "updatedBy":
+          if (member.getValue() instanceof String) {
+            obj.setUpdatedBy((String)member.getValue());
           }
           break;
       }
@@ -63,11 +73,17 @@ public class VirtualNoAppConverter {
     if (obj.getAppName() != null) {
       json.put("appName", obj.getAppName());
     }
-    if (obj.getId() != null) {
-      json.put("id", obj.getId());
+    if (obj.getCreatedBy() != null) {
+      json.put("createdBy", obj.getCreatedBy());
+    }
+    if (obj.getIdVirtualnoAppInfo() != null) {
+      json.put("idVirtualnoAppInfo", obj.getIdVirtualnoAppInfo());
     }
     if (obj.getSecret() != null) {
       json.put("secret", obj.getSecret());
+    }
+    if (obj.getUpdatedBy() != null) {
+      json.put("updatedBy", obj.getUpdatedBy());
     }
   }
 }

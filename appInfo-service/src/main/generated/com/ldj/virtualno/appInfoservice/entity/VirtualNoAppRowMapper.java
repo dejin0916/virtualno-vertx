@@ -18,20 +18,32 @@ public interface VirtualNoAppRowMapper extends io.vertx.sqlclient.templates.RowM
     VirtualNoApp obj = new VirtualNoApp();
     Object val;
     int idx;
-    if ((idx = row.getColumnIndex("appId")) != -1 && (val = row.getString(idx)) != null) {
+    if ((idx = row.getColumnIndex("app_id")) != -1 && (val = row.getString(idx)) != null) {
       obj.setAppId((java.lang.String)val);
     }
-    if ((idx = row.getColumnIndex("appKey")) != -1 && (val = row.getString(idx)) != null) {
+    if ((idx = row.getColumnIndex("app_key")) != -1 && (val = row.getString(idx)) != null) {
       obj.setAppKey((java.lang.String)val);
     }
-    if ((idx = row.getColumnIndex("appName")) != -1 && (val = row.getString(idx)) != null) {
+    if ((idx = row.getColumnIndex("app_name")) != -1 && (val = row.getString(idx)) != null) {
       obj.setAppName((java.lang.String)val);
     }
-    if ((idx = row.getColumnIndex("id")) != -1 && (val = row.getString(idx)) != null) {
-      obj.setId((java.lang.String)val);
+    if ((idx = row.getColumnIndex("created_by")) != -1 && (val = row.getString(idx)) != null) {
+      obj.setCreatedBy((java.lang.String)val);
+    }
+    if ((idx = row.getColumnIndex("created_date")) != -1 && (val = row.getLocalDateTime(idx)) != null) {
+      obj.setCreatedDate((java.time.LocalDateTime)val);
+    }
+    if ((idx = row.getColumnIndex("id_virtualno_app_info")) != -1 && (val = row.getString(idx)) != null) {
+      obj.setIdVirtualnoAppInfo((java.lang.String)val);
     }
     if ((idx = row.getColumnIndex("secret")) != -1 && (val = row.getString(idx)) != null) {
       obj.setSecret((java.lang.String)val);
+    }
+    if ((idx = row.getColumnIndex("updated_by")) != -1 && (val = row.getString(idx)) != null) {
+      obj.setUpdatedBy((java.lang.String)val);
+    }
+    if ((idx = row.getColumnIndex("updated_date")) != -1 && (val = row.getLocalDateTime(idx)) != null) {
+      obj.setUpdatedDate((java.time.LocalDateTime)val);
     }
     return obj;
   }

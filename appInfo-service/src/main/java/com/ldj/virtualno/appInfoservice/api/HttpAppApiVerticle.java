@@ -60,6 +60,12 @@ public class HttpAppApiVerticle extends AbstractVerticle {
   }
 
   private void fetchApplication(RoutingContext context) {
+    String appId = context.pathParam("appId");
+    logger.info("appId is {}", appId);
+    appDataService.fetchAppByAppId(appId)
+      .onSuccess(success -> context.response().setStatusCode(200).putHeader("content-type", "application/json")
+        .end(Json.encodePrettily(success)))
+      .onFailure(err -> context.response().setStatusCode(404).end());
   }
 
   private void updateApplication(RoutingContext context) {
