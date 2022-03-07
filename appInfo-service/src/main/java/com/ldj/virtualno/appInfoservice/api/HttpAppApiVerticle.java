@@ -85,7 +85,7 @@ public class HttpAppApiVerticle extends AbstractVerticle {
   }
 
   private void deleteApplication(RoutingContext context) {
-    appDataService.deleteApp(context.get("appId"))
+    appDataService.deleteApp(context.pathParam("appId"))
       .onSuccess(success -> context.response().setStatusCode(200)
         .putHeader("content-type", "application/json").end("delete app success"))
       .onFailure(err -> context.response().setStatusCode(500).end(err.getMessage()));
