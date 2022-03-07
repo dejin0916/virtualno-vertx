@@ -1,4 +1,4 @@
-package com.ldj.virtualno.appInfoservice.databases;
+package com.lee.virtualno.appInfoservice.databases;
 
 public enum SqlQuery {
   ALL_APPS,

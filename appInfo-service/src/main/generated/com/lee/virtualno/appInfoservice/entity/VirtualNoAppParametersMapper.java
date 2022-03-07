@@ -1,4 +1,4 @@
-package com.ldj.virtualno.appInfoservice.entity;
+package com.lee.virtualno.appInfoservice.entity;
 
 /**
  * Mapper for {@link VirtualNoApp}.

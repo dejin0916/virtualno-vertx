@@ -1,6 +1,6 @@
-package com.ldj.virtualno.appInfoservice.databases;
+package com.lee.virtualno.appInfoservice.databases;
 
-import com.ldj.virtualno.appInfoservice.entity.VirtualNoApp;
+import com.lee.virtualno.appInfoservice.entity.VirtualNoApp;
 import io.vertx.codegen.annotations.GenIgnore;
 import io.vertx.codegen.annotations.ProxyGen;
 import io.vertx.core.Future;

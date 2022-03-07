@@ -14,36 +14,20 @@
 * under the License.
 */
 
-package com.ldj.virtualno.appInfoservice.databases;
+package com.lee.virtualno.appInfoservice.databases;
 
-import com.ldj.virtualno.appInfoservice.databases.AppInfoDataService;
 import io.vertx.core.Vertx;
-import io.vertx.core.Handler;
-import io.vertx.core.AsyncResult;
-import io.vertx.core.eventbus.EventBus;
 import io.vertx.core.eventbus.Message;
-import io.vertx.core.eventbus.MessageConsumer;
-import io.vertx.core.eventbus.DeliveryOptions;
-import io.vertx.core.eventbus.ReplyException;
 import io.vertx.core.json.JsonObject;
 import io.vertx.core.json.JsonArray;
-import java.util.Collection;
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-import java.util.UUID;
+
 import java.util.stream.Collectors;
 import io.vertx.serviceproxy.ProxyHandler;
 import io.vertx.serviceproxy.ServiceException;
 import io.vertx.serviceproxy.ServiceExceptionMessageCodec;
 import io.vertx.serviceproxy.HelperUtils;
-import io.vertx.serviceproxy.ServiceBinder;
 
-import java.util.List;
-import com.ldj.virtualno.appInfoservice.entity.VirtualNoApp;
-import io.vertx.core.Future;
+import com.lee.virtualno.appInfoservice.entity.VirtualNoApp;
 /*
   Generated Proxy code - DO NOT EDIT
   @author Roger the Robot
@@ -52,7 +36,7 @@ import io.vertx.core.Future;
 @SuppressWarnings({"unchecked", "rawtypes"})
 public class AppInfoDataServiceVertxProxyHandler extends ProxyHandler {
 
-  public static final long DEFAULT_CONNECTION_TIMEOUT = 5 * 60; // 5 minutes 
+  public static final long DEFAULT_CONNECTION_TIMEOUT = 5 * 60; // 5 minutes
   private final Vertx vertx;
   private final AppInfoDataService service;
   private final long timerID;
@@ -141,7 +125,7 @@ public class AppInfoDataServiceVertxProxyHandler extends ProxyHandler {
           break;
         }
         case "createApp": {
-          service.createApp(json.getJsonObject("virtualNoApp") != null ? new com.ldj.virtualno.appInfoservice.entity.VirtualNoApp((JsonObject)json.getJsonObject("virtualNoApp")) : null).onComplete(HelperUtils.createHandler(msg, includeDebugInfo));
+          service.createApp(json.getJsonObject("virtualNoApp") != null ? new VirtualNoApp((JsonObject)json.getJsonObject("virtualNoApp")) : null).onComplete(HelperUtils.createHandler(msg, includeDebugInfo));
           break;
         }
         case "saveApp": {

@@ -1,15 +1,13 @@
-package com.ldj.virtualno.appInfoservice.entity;
+package com.lee.virtualno.appInfoservice.entity;
 
 import io.vertx.core.json.JsonObject;
-import io.vertx.core.json.JsonArray;
 import io.vertx.core.json.impl.JsonUtil;
-import java.time.Instant;
-import java.time.format.DateTimeFormatter;
+
 import java.util.Base64;
 
 /**
- * Converter and mapper for {@link com.ldj.virtualno.appInfoservice.entity.VirtualNoApp}.
- * NOTE: This class has been automatically generated from the {@link com.ldj.virtualno.appInfoservice.entity.VirtualNoApp} original class using Vert.x codegen.
+ * Converter and mapper for {@link VirtualNoApp}.
+ * NOTE: This class has been automatically generated from the {@link VirtualNoApp} original class using Vert.x codegen.
  */
 public class VirtualNoAppConverter {
 

@@ -183,3 +183,7 @@ nbdist/
 !.vscode/tasks.json
 !.vscode/launch.json
 !.vscode/extensions.json
+/.idea/encodings.xml
+/.idea/jarRepositories.xml
+/.idea/sqldialects.xml
+/.idea/vcs.xml

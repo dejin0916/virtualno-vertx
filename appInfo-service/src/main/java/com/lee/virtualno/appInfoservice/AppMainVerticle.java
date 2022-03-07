@@ -1,6 +1,6 @@
-package com.ldj.virtualno.appInfoservice;
+package com.lee.virtualno.appInfoservice;
 
-import com.ldj.virtualno.appInfoservice.databases.AppInfoDatabaseVerticle;
+import com.lee.virtualno.appInfoservice.databases.AppInfoDatabaseVerticle;
 import io.vertx.core.AbstractVerticle;
 import io.vertx.core.DeploymentOptions;
 import io.vertx.core.Promise;

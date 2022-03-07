@@ -1,9 +1,9 @@
-package com.ldj.virtualno.appInfoservice.databases;
+package com.lee.virtualno.appInfoservice.databases;
 
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
-import com.ldj.virtualno.appInfoservice.entity.VirtualNoApp;
-import com.ldj.virtualno.appInfoservice.entity.VirtualNoAppParametersMapper;
-import com.ldj.virtualno.appInfoservice.entity.VirtualNoAppRowMapper;
+import com.lee.virtualno.appInfoservice.entity.VirtualNoApp;
+import com.lee.virtualno.appInfoservice.entity.VirtualNoAppParametersMapper;
+import com.lee.virtualno.appInfoservice.entity.VirtualNoAppRowMapper;
 import io.vertx.core.Future;
 import io.vertx.core.Promise;
 import io.vertx.core.json.jackson.DatabindCodec;

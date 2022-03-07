@@ -1,7 +1,7 @@
-package com.ldj.virtualno.appInfoservice.api;
+package com.lee.virtualno.appInfoservice.api;
 
-import com.ldj.virtualno.appInfoservice.databases.AppInfoDataService;
-import com.ldj.virtualno.appInfoservice.entity.VirtualNoApp;
+import com.lee.virtualno.appInfoservice.databases.AppInfoDataService;
+import com.lee.virtualno.appInfoservice.entity.VirtualNoApp;
 import io.vertx.core.AbstractVerticle;
 import io.vertx.core.Promise;
 import io.vertx.core.json.Json;

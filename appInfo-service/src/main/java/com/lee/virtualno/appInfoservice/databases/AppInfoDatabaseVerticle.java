@@ -1,4 +1,4 @@
-package com.ldj.virtualno.appInfoservice.databases;
+package com.lee.virtualno.appInfoservice.databases;
 
 import io.vertx.core.AbstractVerticle;
 import io.vertx.core.Promise;
@@ -26,10 +26,10 @@ public class AppInfoDatabaseVerticle extends AbstractVerticle {
     HashMap<SqlQuery, String> sqlQueries = loadSqlQueries();
     PgPool pgPool = PgPool.pool(vertx,
         new PgConnectOptions().setHost("localhost")
-          .setPort(55433)
+          .setPort(5432)
           .setDatabase("postgres")
           .setUser("postgres")
-          .setPassword("123456"), new PoolOptions());
+          .setPassword("postgres"), new PoolOptions());
 
     ServiceBinder binder = new ServiceBinder(vertx);
     binder.setAddress(CONFIG_APP_QUEUE).register(AppInfoDataService.class, AppInfoDataService.create(sqlQueries, pgPool));
