@@ -1,12 +1,16 @@
 package com.lee.virtualno.common;
 
-import io.vertx.core.*;
+import io.vertx.core.AbstractVerticle;
+import io.vertx.core.CompositeFuture;
+import io.vertx.core.Future;
+import io.vertx.core.Promise;
 import io.vertx.core.impl.ConcurrentHashSet;
-import io.vertx.servicediscovery.Record;
+import io.vertx.core.json.JsonObject;
 import io.vertx.servicediscovery.ServiceDiscovery;
 import io.vertx.servicediscovery.ServiceDiscoveryOptions;
 import io.vertx.servicediscovery.types.EventBusService;
 import io.vertx.servicediscovery.types.HttpEndpoint;
+import io.vertx.servicediscovery.types.JDBCDataSource;
 import io.vertx.servicediscovery.types.MessageSource;
 
 import java.util.ArrayList;
@@ -23,27 +27,33 @@ public class MicroServiceVerticle extends AbstractVerticle {
     discovery = ServiceDiscovery.create(vertx, new ServiceDiscoveryOptions().setBackendConfiguration(config()));
   }
 
-  public void publishHttpEndpoint(String name, String host, int port, Handler<AsyncResult<Void>> completionHandler) {
+  public Future<Void> publishHttpEndpoint(String name, String host, int port) {
     io.vertx.servicediscovery.Record record = HttpEndpoint.createRecord(name, host, port, "/");
-    publish(record, completionHandler);
+    return publish(record);
   }
 
-  public void publishMessageSource(String name, String address, Class<?> contentClass, Handler<AsyncResult<Void>> completionHandler) {
+  public Future<Void> publishMessageSource(String name, String address, Class<?> contentClass) {
     io.vertx.servicediscovery.Record record = MessageSource.createRecord(name, address, contentClass);
-    publish(record, completionHandler);
+    return publish(record);
   }
 
-  public void publishMessageSource(String name, String address, Handler<AsyncResult<Void>> completionHandler) {
+  public Future<Void> publishMessageSource(String name, String address) {
     io.vertx.servicediscovery.Record record = MessageSource.createRecord(name, address);
-    publish(record, completionHandler);
+    return publish(record);
   }
 
-  public void publishEventBusService(String name, String address, Class<?> serviceClass, Handler<AsyncResult<Void>> completionHandler) {
+  public Future<Void> publishEventBusService(String name, String address, Class<?> serviceClass) {
     io.vertx.servicediscovery.Record record = EventBusService.createRecord(name, address, serviceClass);
-    publish(record, completionHandler);
+    return publish(record);
   }
 
-  protected void publish(io.vertx.servicediscovery.Record record, Handler<AsyncResult<Void>> completionHandler) {
+  public Future<Void> publishDataSource(String name, JsonObject location, JsonObject metaData) {
+    io.vertx.servicediscovery.Record record = JDBCDataSource.createRecord(name, location, metaData);
+    return publish(record);
+  }
+
+  protected Future<Void> publish(io.vertx.servicediscovery.Record record) {
+    Promise<Void> publishResult = Promise.promise();
     if (discovery == null) {
       try {
         start();
@@ -53,12 +63,12 @@ public class MicroServiceVerticle extends AbstractVerticle {
     }
 
     discovery.publish(record)
-      .onComplete(ar -> {
-        if(ar.succeeded()) {
-          registeredRecords.add(record);
-        }
-        completionHandler.handle(ar.map(null));
-    });
+      .onSuccess(success -> {
+        registeredRecords.add(record);
+        publishResult.complete();
+      })
+      .onFailure(publishResult::fail);
+    return publishResult.future();
   }
 
   @Override
