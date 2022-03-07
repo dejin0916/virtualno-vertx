@@ -99,9 +99,10 @@ public class AppInfoDataServiceVertxEBProxy implements AppInfoDataService {
     });
   }
   @Override
-  public Future<Void> saveApp(String appKey, String secret){
+  public Future<Void> saveApp(String appId, String appKey, String secret){
     if (closed) return io.vertx.core.Future.failedFuture("Proxy is closed");
     JsonObject _json = new JsonObject();
+    _json.put("appId", appId);
     _json.put("appKey", appKey);
     _json.put("secret", secret);
 
@@ -112,10 +113,10 @@ public class AppInfoDataServiceVertxEBProxy implements AppInfoDataService {
     });
   }
   @Override
-  public Future<Void> deleteApp(String id){
+  public Future<Void> deleteApp(String appId){
     if (closed) return io.vertx.core.Future.failedFuture("Proxy is closed");
     JsonObject _json = new JsonObject();
-    _json.put("id", id);
+    _json.put("appId", appId);
 
     DeliveryOptions _deliveryOptions = (_options != null) ? new DeliveryOptions(_options) : new DeliveryOptions();
     _deliveryOptions.addHeader("action", "deleteApp");
