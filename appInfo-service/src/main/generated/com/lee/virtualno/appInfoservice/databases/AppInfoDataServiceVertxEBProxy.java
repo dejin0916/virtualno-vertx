@@ -21,14 +21,20 @@ import io.vertx.core.Vertx;
 import io.vertx.core.Future;
 import io.vertx.core.json.JsonObject;
 import io.vertx.core.json.JsonArray;
-
+import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
+import java.util.Set;
 import java.util.stream.Collectors;
-
+import java.util.function.Function;
 import io.vertx.serviceproxy.ServiceException;
 import io.vertx.serviceproxy.ServiceExceptionMessageCodec;
+import io.vertx.serviceproxy.ProxyUtils;
 
+import java.util.List;
 import com.lee.virtualno.appInfoservice.entity.VirtualNoApp;
+import io.vertx.core.Future;
 /*
   Generated Proxy code - DO NOT EDIT
   @author Roger the Robot
@@ -64,7 +70,7 @@ public class AppInfoDataServiceVertxEBProxy implements AppInfoDataService {
     _deliveryOptions.addHeader("action", "fetchAllApps");
     return _vertx.eventBus().<JsonArray>request(_address, _json, _deliveryOptions).map(msg -> {
       return msg.body().stream()
-        .map(v -> v != null ? new VirtualNoApp((JsonObject)v) : null)
+        .map(v -> v != null ? new com.lee.virtualno.appInfoservice.entity.VirtualNoApp((JsonObject)v) : null)
         .collect(Collectors.toList());
     });
   }
@@ -77,7 +83,7 @@ public class AppInfoDataServiceVertxEBProxy implements AppInfoDataService {
     DeliveryOptions _deliveryOptions = (_options != null) ? new DeliveryOptions(_options) : new DeliveryOptions();
     _deliveryOptions.addHeader("action", "fetchAppByAppId");
     return _vertx.eventBus().<JsonObject>request(_address, _json, _deliveryOptions).map(msg -> {
-      return msg.body() != null ? new VirtualNoApp((JsonObject)msg.body()) : null;
+      return msg.body() != null ? new com.lee.virtualno.appInfoservice.entity.VirtualNoApp((JsonObject)msg.body()) : null;
     });
   }
   @Override

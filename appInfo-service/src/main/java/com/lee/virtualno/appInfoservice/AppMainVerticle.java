@@ -15,7 +15,7 @@ public class AppMainVerticle extends AbstractVerticle {
     dbPromise.future().compose(id -> {
       Promise<String> httpVerticleDeployment = Promise.promise();
       vertx.deployVerticle(
-        "com.ldj.virtualno.appInfoservice.api.HttpAppApiVerticle",
+        "com.lee.virtualno.appInfoservice.api.HttpAppApiVerticle",
         new DeploymentOptions().setInstances(2),
         httpVerticleDeployment);
       return httpVerticleDeployment.future();
