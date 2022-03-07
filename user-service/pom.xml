@@ -8,8 +8,8 @@
     <version>1.0.0-SNAPSHOT</version>
   </parent>
   <modelVersion>4.0.0</modelVersion>
-  <description>应用服务，包含服务的增删改查</description>
-  <artifactId>appinfo-service</artifactId>
+  <description>用户相关服务</description>
+  <artifactId>user-service</artifactId>
 
   <properties>
     <maven.compiler.source>11</maven.compiler.source>
@@ -23,14 +23,7 @@
     </dependency>
     <dependency>
       <groupId>io.vertx</groupId>
-      <artifactId>vertx-pg-client</artifactId>
-    </dependency>
-    <!--此依赖详见这个issues https://github.com/eclipse-vertx/vertx-sql-client/issues/1059-->
-    <dependency>
-      <groupId>com.ongres.scram</groupId>
-      <artifactId>client</artifactId>
-      <version>${scram.version}</version>
-      <optional>true</optional>
+      <artifactId>vertx-rx-java2</artifactId>
     </dependency>
   </dependencies>
 </project>

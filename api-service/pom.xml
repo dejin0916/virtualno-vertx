@@ -8,7 +8,7 @@
     <version>1.0.0-SNAPSHOT</version>
   </parent>
   <modelVersion>4.0.0</modelVersion>
-
+  <description>开放的api服务，包含号码绑定、解绑、关系查询</description>
   <artifactId>api-service</artifactId>
 
   <properties>
@@ -20,6 +20,14 @@
       <groupId>com.lee.virtualno</groupId>
       <artifactId>common</artifactId>
       <version>1.0.0-SNAPSHOT</version>
+    </dependency>
+    <dependency>
+      <groupId>io.vertx</groupId>
+      <artifactId>vertx-redis-client</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>io.vertx</groupId>
+      <artifactId>vertx-auth-jwt</artifactId>
     </dependency>
   </dependencies>
 </project>
