@@ -24,11 +24,11 @@ export default class AppInfoDataService {
 
   fetchAppByAppId(appId: string) : void;
 
-  saveApp(appKey: string, secret: string) : void;
+  saveApp(appId: string, appKey: string, secret: string) : void;
 
   fetchAllApps() : void;
 
-  deleteApp(id: string) : void;
+  deleteApp(appId: string) : void;
 
   createApp(virtualNoApp: any) : void;
 }

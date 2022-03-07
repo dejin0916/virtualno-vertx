@@ -1,9 +1,11 @@
 package com.ldj.virtualno.appInfoservice.api;
 
 import com.ldj.virtualno.appInfoservice.databases.AppInfoDataService;
+import com.ldj.virtualno.appInfoservice.entity.VirtualNoApp;
 import io.vertx.core.AbstractVerticle;
 import io.vertx.core.Promise;
 import io.vertx.core.json.Json;
+import io.vertx.core.json.JsonObject;
 import io.vertx.ext.web.Router;
 import io.vertx.ext.web.RoutingContext;
 import io.vertx.ext.web.handler.BodyHandler;
@@ -26,13 +28,13 @@ public class HttpAppApiVerticle extends AbstractVerticle {
     Router router = Router.router(vertx);
     BodyHandler bodyHandler = BodyHandler.create();
     router.post().handler(bodyHandler);
-    router.put().handler(bodyHandler);
+    router.patch().handler(bodyHandler);
 
     router.get("/").handler(this::home);
-    router.get("/apps").handler(this::fetchAllApplication);
+    router.get("/app").handler(this::fetchAllApplication);
     router.post("/app").handler(this::addApplication);
-    router.get("/apps/:appId").handler(this::fetchApplication);
-    router.put("/app").handler(this::updateApplication);
+    router.get("/app/:appId").handler(this::fetchApplication);
+    router.patch("/app/:appId").handler(this::updateApplication);
     router.delete("/app/:appId").handler(this::deleteApplication);
 
     vertx.createHttpServer()
@@ -56,7 +58,10 @@ public class HttpAppApiVerticle extends AbstractVerticle {
 
 
   private void addApplication(RoutingContext context) {
-
+    appDataService.createApp(context.getBodyAsJson().mapTo(VirtualNoApp.class))
+      .onSuccess(success -> context.response().setStatusCode(200)
+        .putHeader("content-type", "application/json").end("add app success"))
+      .onFailure(err -> context.response().setStatusCode(500).end(err.getMessage()));
   }
 
   private void fetchApplication(RoutingContext context) {
@@ -69,8 +74,20 @@ public class HttpAppApiVerticle extends AbstractVerticle {
   }
 
   private void updateApplication(RoutingContext context) {
+    JsonObject body = context.getBodyAsJson();
+    String appId = context.pathParam("appId");
+    String appKey = body.getString("appKey");
+    String secret = body.getString("secret");
+    appDataService.saveApp(appId, appKey, secret)
+      .onSuccess(success -> context.response().setStatusCode(200)
+        .putHeader("content-type", "application/json").end("update success success"))
+      .onFailure(err -> context.response().setStatusCode(500).end(err.getMessage()));
   }
 
   private void deleteApplication(RoutingContext context) {
+    appDataService.deleteApp(context.get("appId"))
+      .onSuccess(success -> context.response().setStatusCode(200)
+        .putHeader("content-type", "application/json").end("delete app success"))
+      .onFailure(err -> context.response().setStatusCode(500).end(err.getMessage()));
   }
 }

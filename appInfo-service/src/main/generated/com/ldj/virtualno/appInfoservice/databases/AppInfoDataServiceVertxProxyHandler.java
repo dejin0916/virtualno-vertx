@@ -145,12 +145,13 @@ public class AppInfoDataServiceVertxProxyHandler extends ProxyHandler {
           break;
         }
         case "saveApp": {
-          service.saveApp((java.lang.String)json.getValue("appKey"),
+          service.saveApp((java.lang.String)json.getValue("appId"),
+                        (java.lang.String)json.getValue("appKey"),
                         (java.lang.String)json.getValue("secret")).onComplete(HelperUtils.createHandler(msg, includeDebugInfo));
           break;
         }
         case "deleteApp": {
-          service.deleteApp((java.lang.String)json.getValue("id")).onComplete(HelperUtils.createHandler(msg, includeDebugInfo));
+          service.deleteApp((java.lang.String)json.getValue("appId")).onComplete(HelperUtils.createHandler(msg, includeDebugInfo));
           break;
         }
         default: throw new IllegalStateException("Invalid action: " + action);

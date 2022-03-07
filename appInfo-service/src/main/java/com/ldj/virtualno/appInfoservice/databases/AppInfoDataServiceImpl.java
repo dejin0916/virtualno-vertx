@@ -2,6 +2,7 @@ package com.ldj.virtualno.appInfoservice.databases;
 
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import com.ldj.virtualno.appInfoservice.entity.VirtualNoApp;
+import com.ldj.virtualno.appInfoservice.entity.VirtualNoAppParametersMapper;
 import com.ldj.virtualno.appInfoservice.entity.VirtualNoAppRowMapper;
 import io.vertx.core.Future;
 import io.vertx.core.Promise;
@@ -11,10 +12,7 @@ import io.vertx.sqlclient.templates.SqlTemplate;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.List;
+import java.util.*;
 
 public class AppInfoDataServiceImpl implements AppInfoDataService {
   private static final Logger logger = LoggerFactory.getLogger(AppInfoDataServiceImpl.class);
@@ -66,16 +64,54 @@ public class AppInfoDataServiceImpl implements AppInfoDataService {
 
   @Override
   public Future<Void> createApp(VirtualNoApp virtualNoApp) {
-    return null;
+    Promise<Void> result = Promise.promise();
+    SqlTemplate.forUpdate(pgPool, sqlQueries.get(SqlQuery.CREATE_APP))
+      .mapFrom(VirtualNoAppParametersMapper.INSTANCE)
+      .execute(virtualNoApp)
+      .onSuccess(success -> {
+        logger.info("create app success");
+        result.complete();
+      })
+      .onFailure(err -> {
+        logger.error("create app caught error", err);
+        result.fail(err);
+      });
+    return result.future();
   }
 
   @Override
-  public Future<Void> saveApp(String appKey, String secret) {
-    return null;
+  public Future<Void> saveApp(String appId, String appKey, String secret) {
+    Promise<Void> result = Promise.promise();
+    Map<String, Object> updateParams = new HashMap<>();
+    updateParams.put("appKey", appKey);
+    updateParams.put("secret", secret);
+    updateParams.put("appId", appId);
+    SqlTemplate.forUpdate(pgPool, sqlQueries.get(SqlQuery.SAVE_APP))
+      .execute(updateParams)
+      .onSuccess(success -> {
+        logger.info("update app success");
+        result.complete();
+      })
+      .onFailure(err -> {
+        logger.error("update app caught error", err);
+        result.fail(err);
+      });
+    return result.future();
   }
 
   @Override
-  public Future<Void> deleteApp(String id) {
-    return null;
+  public Future<Void> deleteApp(String appId) {
+    Promise<Void> result = Promise.promise();
+    SqlTemplate.forUpdate(pgPool, sqlQueries.get(SqlQuery.DELETE_APP))
+      .execute(Collections.singletonMap("appId", appId))
+      .onSuccess(success -> {
+        logger.info("delete app success");
+        result.complete();
+      })
+      .onFailure(err -> {
+        logger.error("delete app caught error", err);
+        result.fail(err);
+      });
+    return result.future();
   }
 }

@@ -65,17 +65,18 @@
     /**
 
      @public
+     @param appId {string} 
      @param appKey {string} 
      @param secret {string} 
      @return {todo}
      */
-    this.saveApp =  function(appKey, secret) {
+    this.saveApp =  function(appId, appKey, secret) {
       var __args = arguments;
-      if (__args.length === 2 && typeof __args[0] === 'string' && typeof __args[1] === 'string') {
+      if (__args.length === 3 && typeof __args[0] === 'string' && typeof __args[1] === 'string' && typeof __args[2] === 'string') {
         if (closed) {
           throw new Error('Proxy is closed');
         }
-        j_eb.send(j_address, {"appKey":__args[0], "secret":__args[1]}, {"action":"saveApp"});
+        j_eb.send(j_address, {"appId":__args[0], "appKey":__args[1], "secret":__args[2]}, {"action":"saveApp"});
         return;
       } else throw new TypeError('function invoked with invalid arguments');
     };
@@ -100,16 +101,16 @@
     /**
 
      @public
-     @param id {string} 
+     @param appId {string} 
      @return {todo}
      */
-    this.deleteApp =  function(id) {
+    this.deleteApp =  function(appId) {
       var __args = arguments;
       if (__args.length === 1 && typeof __args[0] === 'string') {
         if (closed) {
           throw new Error('Proxy is closed');
         }
-        j_eb.send(j_address, {"id":__args[0]}, {"action":"deleteApp"});
+        j_eb.send(j_address, {"appId":__args[0]}, {"action":"deleteApp"});
         return;
       } else throw new TypeError('function invoked with invalid arguments');
     };

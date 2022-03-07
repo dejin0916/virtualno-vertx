@@ -26,10 +26,10 @@ public class AppInfoDatabaseVerticle extends AbstractVerticle {
     HashMap<SqlQuery, String> sqlQueries = loadSqlQueries();
     PgPool pgPool = PgPool.pool(vertx,
         new PgConnectOptions().setHost("localhost")
-          .setPort(5432)
+          .setPort(55433)
           .setDatabase("postgres")
           .setUser("postgres")
-          .setPassword("postgres"), new PoolOptions());
+          .setPassword("123456"), new PoolOptions());
 
     ServiceBinder binder = new ServiceBinder(vertx);
     binder.setAddress(CONFIG_APP_QUEUE).register(AppInfoDataService.class, AppInfoDataService.create(sqlQueries, pgPool));
@@ -54,8 +54,8 @@ public class AppInfoDatabaseVerticle extends AbstractVerticle {
     HashMap<SqlQuery, String> sqlQueries = new HashMap<>();
     sqlQueries.put(SqlQuery.ALL_APPS, queriesProps.getProperty("all-apps"));
     sqlQueries.put(SqlQuery.GET_APP_BY_APP_ID, queriesProps.getProperty("get-app"));
-    sqlQueries.put(SqlQuery.CREATE_APP, queriesProps.getProperty("save-app"));
-    sqlQueries.put(SqlQuery.SAVE_APP, queriesProps.getProperty("update-app"));
+    sqlQueries.put(SqlQuery.CREATE_APP, queriesProps.getProperty("create-app"));
+    sqlQueries.put(SqlQuery.SAVE_APP, queriesProps.getProperty("save-app"));
     sqlQueries.put(SqlQuery.DELETE_APP, queriesProps.getProperty("delete-app"));
     return sqlQueries;
   }

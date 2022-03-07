@@ -19,9 +19,9 @@ public interface AppInfoDataService {
 
   Future<Void> createApp(VirtualNoApp virtualNoApp);
 
-  Future<Void> saveApp(String appKey, String secret);
+  Future<Void> saveApp(String appId, String appKey, String secret);
 
-  Future<Void> deleteApp(String id);
+  Future<Void> deleteApp(String appId);
 
   @GenIgnore
   static AppInfoDataService create(HashMap<SqlQuery, String> sqlQueries, PgPool pgPool) {
