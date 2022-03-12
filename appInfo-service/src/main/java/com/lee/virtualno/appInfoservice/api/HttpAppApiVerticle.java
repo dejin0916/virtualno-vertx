@@ -1,11 +1,13 @@
 package com.lee.virtualno.appInfoservice.api;
 
+import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import com.lee.virtualno.appInfoservice.databases.AppInfoDataService;
 import com.lee.virtualno.appInfoservice.entity.VirtualNoApp;
 import io.vertx.core.AbstractVerticle;
 import io.vertx.core.Promise;
 import io.vertx.core.json.Json;
 import io.vertx.core.json.JsonObject;
+import io.vertx.core.json.jackson.DatabindCodec;
 import io.vertx.ext.web.Router;
 import io.vertx.ext.web.RoutingContext;
 import io.vertx.ext.web.handler.BodyHandler;
@@ -21,6 +23,8 @@ public class HttpAppApiVerticle extends AbstractVerticle {
 
   @Override
   public void start(Promise<Void> startPromise) throws Exception {
+    DatabindCodec.mapper().registerModule(new JavaTimeModule());
+    DatabindCodec.prettyMapper().registerModule(new JavaTimeModule());
     String appQueue = config().getString(CONFIG_APP_QUEUE,"app.queue");
     appDataService = AppInfoDataService.createProxy(vertx, appQueue);
 

@@ -1,5 +1,6 @@
 package com.lee.virtualno.appInfoservice.entity;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import io.vertx.codegen.annotations.DataObject;
 import io.vertx.core.json.JsonObject;
 import io.vertx.sqlclient.templates.annotations.Column;
@@ -33,9 +34,11 @@ public class VirtualNoApp implements Serializable {
   @Column(name = "secret")
   private String secret;
 
+  @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss",timezone="GMT+8")
   @Column(name = "created_date")
   private LocalDateTime createdDate;
 
+  @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss",timezone="GMT+8")
   @Column(name = "updated_date")
   private LocalDateTime updatedDate;
 

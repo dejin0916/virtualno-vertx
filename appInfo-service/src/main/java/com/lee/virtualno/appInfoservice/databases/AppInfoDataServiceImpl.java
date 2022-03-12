@@ -1,12 +1,10 @@
 package com.lee.virtualno.appInfoservice.databases;
 
-import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import com.lee.virtualno.appInfoservice.entity.VirtualNoApp;
 import com.lee.virtualno.appInfoservice.entity.VirtualNoAppParametersMapper;
 import com.lee.virtualno.appInfoservice.entity.VirtualNoAppRowMapper;
 import io.vertx.core.Future;
 import io.vertx.core.Promise;
-import io.vertx.core.json.jackson.DatabindCodec;
 import io.vertx.pgclient.PgPool;
 import io.vertx.sqlclient.templates.SqlTemplate;
 import org.slf4j.Logger;
@@ -21,7 +19,6 @@ public class AppInfoDataServiceImpl implements AppInfoDataService {
 
 
   public AppInfoDataServiceImpl(HashMap<SqlQuery, String> sqlQueries, PgPool pgPool) {
-    DatabindCodec.mapper().registerModule(new JavaTimeModule());
     this.sqlQueries = sqlQueries;
     this.pgPool = pgPool;
     pgPool.getConnection()
