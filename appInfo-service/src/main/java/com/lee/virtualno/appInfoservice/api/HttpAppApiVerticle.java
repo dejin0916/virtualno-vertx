@@ -3,6 +3,7 @@ package com.lee.virtualno.appInfoservice.api;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import com.lee.virtualno.appInfoservice.databases.AppInfoDataService;
 import com.lee.virtualno.appInfoservice.entity.VirtualNoApp;
+import com.lee.virtualno.common.MicroServiceVerticle;
 import io.vertx.core.AbstractVerticle;
 import io.vertx.core.Promise;
 import io.vertx.core.json.Json;
@@ -14,7 +15,7 @@ import io.vertx.ext.web.handler.BodyHandler;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class HttpAppApiVerticle extends AbstractVerticle {
+public class HttpAppApiVerticle extends MicroServiceVerticle {
   private static final Logger logger = LoggerFactory.getLogger(HttpAppApiVerticle.class);
 
   private static final String CONFIG_APP_QUEUE = "app.queue";
@@ -23,8 +24,8 @@ public class HttpAppApiVerticle extends AbstractVerticle {
 
   @Override
   public void start(Promise<Void> startPromise) throws Exception {
-    DatabindCodec.mapper().registerModule(new JavaTimeModule());
-    DatabindCodec.prettyMapper().registerModule(new JavaTimeModule());
+    super.start();
+
     String appQueue = config().getString(CONFIG_APP_QUEUE,"app.queue");
     appDataService = AppInfoDataService.createProxy(vertx, appQueue);
 
@@ -40,6 +41,10 @@ public class HttpAppApiVerticle extends AbstractVerticle {
     router.get("/app/:appId").handler(this::fetchApplication);
     router.patch("/app/:appId").handler(this::updateApplication);
     router.delete("/app/:appId").handler(this::deleteApplication);
+
+    publishHttpEndpoint("app", "localhost", config().getInteger("http.port", 8888))
+      .onSuccess(success -> logger.info("AppInfoService (App endpoint) service published"))
+      .onFailure(Throwable::printStackTrace);
 
     vertx.createHttpServer()
       .requestHandler(router)

@@ -1,9 +1,7 @@
 package com.lee.virtualno.appInfoservice.databases;
 
-import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
-import io.vertx.core.AbstractVerticle;
+import com.lee.virtualno.common.MicroServiceVerticle;
 import io.vertx.core.Promise;
-import io.vertx.core.json.jackson.DatabindCodec;
 import io.vertx.pgclient.PgConnectOptions;
 import io.vertx.pgclient.PgPool;
 import io.vertx.serviceproxy.ServiceBinder;
@@ -17,7 +15,7 @@ import java.io.InputStream;
 import java.util.HashMap;
 import java.util.Properties;
 
-public class AppInfoDatabaseVerticle extends AbstractVerticle {
+public class AppInfoDatabaseVerticle extends MicroServiceVerticle {
   private static final Logger logger = LoggerFactory.getLogger(AppInfoDatabaseVerticle.class);
 
   public static final String CONFIG_APP_SQL_QUERIES_RESOURCE_FILE = "app.sqlqueries.resource.file";
@@ -25,8 +23,6 @@ public class AppInfoDatabaseVerticle extends AbstractVerticle {
 
   @Override
   public void start(Promise<Void> promise) throws Exception {
-    DatabindCodec.mapper().registerModule(new JavaTimeModule());
-    DatabindCodec.prettyMapper().registerModule(new JavaTimeModule());
     HashMap<SqlQuery, String> sqlQueries = loadSqlQueries();
     PgPool pgPool = PgPool.pool(vertx,
         new PgConnectOptions().setHost("localhost")
