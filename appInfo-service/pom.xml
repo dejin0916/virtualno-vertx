@@ -21,10 +21,6 @@
       <artifactId>common</artifactId>
       <version>1.0.0-SNAPSHOT</version>
     </dependency>
-    <dependency>
-      <groupId>io.vertx</groupId>
-      <artifactId>vertx-pg-client</artifactId>
-    </dependency>
     <!--此依赖详见这个issues https://github.com/eclipse-vertx/vertx-sql-client/issues/1059-->
     <dependency>
       <groupId>com.ongres.scram</groupId>

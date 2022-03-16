@@ -40,3 +40,6 @@ create index idx_virtualno_yb_rel_real_num on public.virtualno_yb_rel using btre
 create index idx_virtualno_yb_rel_virtual_num on public.virtualno_yb_rel using btree (virtual_number);
 create index idx_virtualno_yb_rel_biz_id on public.virtualno_yb_rel using btree (business_id);
 create index idx_virtualno_yb_rel_biz_type on public.virtualno_yb_rel using btree (business_type);
+
+alter table public.virtualno_yb_rel owner to virtualno;
+grant all on table public.virtualno_yb_rel to virtualno;

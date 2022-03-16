@@ -1,11 +1,13 @@
 package com.lee.virtualno.common;
 
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
+import com.lee.virtualno.common.discovery.PgPoolDataSource;
 import io.vertx.core.AbstractVerticle;
 import io.vertx.core.CompositeFuture;
 import io.vertx.core.Future;
 import io.vertx.core.Promise;
 import io.vertx.core.impl.ConcurrentHashSet;
+import io.vertx.core.json.JsonObject;
 import io.vertx.core.json.jackson.DatabindCodec;
 import io.vertx.servicediscovery.Record;
 import io.vertx.servicediscovery.ServiceDiscovery;
@@ -47,6 +49,11 @@ public class MicroServiceVerticle extends AbstractVerticle {
 
   public Future<Void> publishEventBusService(String name, String address, Class<?> serviceClass) {
     Record record = EventBusService.createRecord(name, address, serviceClass);
+    return publish(record);
+  }
+
+  public Future<Void> publishPgPoolDataSource(String name, JsonObject location, JsonObject metadata) {
+    Record record = PgPoolDataSource.createRecord(name, location, metadata);
     return publish(record);
   }
 

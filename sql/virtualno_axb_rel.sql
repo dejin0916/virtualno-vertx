@@ -41,3 +41,6 @@ create index idx_virtualno_axb_rel_real_num_b on public.virtualno_axb_rel using 
 create index idx_virtualno_axb_rel_virtual_num on public.virtualno_axb_rel using btree (virtual_number);
 create index idx_virtualno_axb_rel_biz_id on public.virtualno_axb_rel using btree (business_id);
 create index idx_virtualno_axb_rel_biz_type on public.virtualno_axb_rel using btree (business_type);
+
+alter table public.virtualno_axb_rel owner to virtualno;
+grant all on table public.virtualno_axb_rel to virtualno;
