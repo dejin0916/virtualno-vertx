@@ -1,11 +1,11 @@
 package com.lee.virtualno.appInfoservice.databases;
 
 import com.lee.virtualno.common.MicroServiceVerticle;
+import com.lee.virtualno.common.discovery.PgPoolDataSource;
 import io.vertx.core.Promise;
-import io.vertx.pgclient.PgConnectOptions;
+import io.vertx.core.json.JsonObject;
 import io.vertx.pgclient.PgPool;
 import io.vertx.serviceproxy.ServiceBinder;
-import io.vertx.sqlclient.PoolOptions;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -20,21 +20,25 @@ public class AppInfoDatabaseVerticle extends MicroServiceVerticle {
 
   public static final String CONFIG_APP_SQL_QUERIES_RESOURCE_FILE = "app.sqlqueries.resource.file";
   public static final String CONFIG_APP_QUEUE = "app.queue";
-
+  private PgPool pgPool;
   @Override
   public void start(Promise<Void> promise) throws Exception {
+    super.start();
     HashMap<SqlQuery, String> sqlQueries = loadSqlQueries();
-    PgPool pgPool = PgPool.pool(vertx,
-        new PgConnectOptions().setHost("localhost")
-          .setPort(5432)
-          .setDatabase("postgres")
-          .setUser("postgres")
-          .setPassword("postgres"), new PoolOptions());
+    PgPoolDataSource.getPgPool(discovery, record -> record.getName().equals("virtualno-pgpool"))
+      .onSuccess(pool -> {
+        logger.info("look up pg pool success");
+        pgPool = pool;
+      })
+      .onFailure(err -> {
+        logger.error("look up pg pool caught error", err);
+        promise.fail(err);
+      });
 
     ServiceBinder binder = new ServiceBinder(vertx);
     binder.setAddress(CONFIG_APP_QUEUE).register(AppInfoDataService.class, AppInfoDataService.create(sqlQueries, pgPool));
-    promise.complete();
     logger.info("AppInfoDatabaseVerticle start successful");
+    promise.complete();
   }
 
   private HashMap<SqlQuery, String> loadSqlQueries() throws IOException {
@@ -58,5 +62,10 @@ public class AppInfoDatabaseVerticle extends MicroServiceVerticle {
     sqlQueries.put(SqlQuery.SAVE_APP, queriesProps.getProperty("save-app"));
     sqlQueries.put(SqlQuery.DELETE_APP, queriesProps.getProperty("delete-app"));
     return sqlQueries;
+  }
+
+  @Override
+  public void stop(Promise<Void> promise) throws Exception {
+
   }
 }

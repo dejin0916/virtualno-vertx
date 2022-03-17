@@ -11,9 +11,9 @@ CREATE TABLE public.virtualno_app_info (
     ext_info jsonb NULL,
     constraint pk_virtualno_app_info primary key (id_virtualno_app_info)
 );
-COMMENT ON TABLE public.virtualno_ax_rel IS 'app接入方信息';
+COMMENT ON TABLE public.virtualno_app_info IS 'app接入方信息';
 
-create unique index idx_virtualno_app_info_id on public.virtualno_ax_rel using btree (app_id);
+create unique index idx_virtualno_app_info_id on public.virtualno_app_info using btree (app_id);
 
 alter table public.virtualno_app_info owner to virtualno;
 grant all on table public.virtualno_app_info to virtualno;

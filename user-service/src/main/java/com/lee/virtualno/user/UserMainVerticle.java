@@ -1,11 +1,12 @@
 package com.lee.virtualno.user;
 
-import io.reactivex.Completable;
-import io.vertx.reactivex.core.AbstractVerticle;
+
+import io.vertx.core.AbstractVerticle;
+import io.vertx.core.Promise;
 
 public class UserMainVerticle extends AbstractVerticle {
   @Override
-  public Completable rxStart() {
-    return super.rxStart();
+  public void start(Promise<Void> promise) throws Exception {
+
   }
 }
