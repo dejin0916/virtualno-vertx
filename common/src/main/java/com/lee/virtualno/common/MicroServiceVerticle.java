@@ -16,20 +16,47 @@ import io.vertx.servicediscovery.types.EventBusService;
 import io.vertx.servicediscovery.types.HttpEndpoint;
 import io.vertx.servicediscovery.types.MessageSource;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Set;
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.util.*;
 import java.util.stream.Collectors;
 
 public class MicroServiceVerticle extends AbstractVerticle {
+  public static final String CONFIG_APP_SQL_QUERIES_RESOURCE_FILE = "app.sqlqueries.resource.file";
   protected ServiceDiscovery discovery;
   protected Set<Record> registeredRecords = new ConcurrentHashSet<>();
+  protected HashMap<String, String> sqlQueries;
 
   @Override
   public void start() throws Exception {
     DatabindCodec.mapper().registerModule(new JavaTimeModule());
     DatabindCodec.prettyMapper().registerModule(new JavaTimeModule());
     discovery = ServiceDiscovery.create(vertx, new ServiceDiscoveryOptions().setBackendConfiguration(config()));
+    sqlQueries = loadSqlQueries();
+  }
+
+  private HashMap<String, String> loadSqlQueries() throws IOException {
+    String queriesFile = config().getString(CONFIG_APP_SQL_QUERIES_RESOURCE_FILE);
+    InputStream queriesInputStream;
+    if (queriesFile != null) {
+      queriesInputStream = new FileInputStream(queriesFile);
+    } else {
+      queriesInputStream = getClass().getResourceAsStream("/sql.properties");
+    }
+
+    Properties queriesProps = new Properties();
+    queriesProps.load(queriesInputStream);
+    assert queriesInputStream != null;
+    queriesInputStream.close();
+
+    HashMap<String, String> sqlQueries = new HashMap<>();
+    Set<String> enumeration = queriesProps.stringPropertyNames();
+    enumeration.forEach(key -> {
+      String value = queriesProps.getProperty(key);
+      sqlQueries.put(key, value);
+    });
+    return sqlQueries;
   }
 
   public Future<Void> publishHttpEndpoint(String name, String host, int port) {

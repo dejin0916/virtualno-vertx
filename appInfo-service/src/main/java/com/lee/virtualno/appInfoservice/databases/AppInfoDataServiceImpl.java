@@ -14,11 +14,11 @@ import java.util.*;
 
 public class AppInfoDataServiceImpl implements AppInfoDataService {
   private static final Logger logger = LoggerFactory.getLogger(AppInfoDataServiceImpl.class);
-  private final HashMap<SqlQuery, String> sqlQueries;
+  private final HashMap<String, String> sqlQueries;
   private final PgPool pgPool;
 
 
-  public AppInfoDataServiceImpl(HashMap<SqlQuery, String> sqlQueries, PgPool pgPool) {
+  public AppInfoDataServiceImpl(HashMap<String, String> sqlQueries, PgPool pgPool) {
     this.sqlQueries = sqlQueries;
     this.pgPool = pgPool;
     pgPool.getConnection()
@@ -29,7 +29,7 @@ public class AppInfoDataServiceImpl implements AppInfoDataService {
   @Override
   public Future<List<VirtualNoApp>> fetchAllApps() {
     Promise<List<VirtualNoApp>> result = Promise.promise();
-    SqlTemplate.forQuery(pgPool, sqlQueries.get(SqlQuery.ALL_APPS))
+    SqlTemplate.forQuery(pgPool, sqlQueries.get("all-apps"))
       .mapTo(VirtualNoAppRowMapper.INSTANCE)
       .execute(null)
       .onSuccess(apps -> {
@@ -47,8 +47,7 @@ public class AppInfoDataServiceImpl implements AppInfoDataService {
   @Override
   public Future<VirtualNoApp> fetchAppByAppId(String appId) {
     Promise<VirtualNoApp> result = Promise.promise();
-    logger.info(sqlQueries.get(SqlQuery.GET_APP_BY_APP_ID));
-    SqlTemplate.forQuery(pgPool, sqlQueries.get(SqlQuery.GET_APP_BY_APP_ID))
+    SqlTemplate.forQuery(pgPool, sqlQueries.get("get-app"))
       .mapTo(VirtualNoAppRowMapper.INSTANCE)
       .execute(Collections.singletonMap("appId", appId))
       .onSuccess(apps -> result.complete(apps.iterator().next()))
@@ -62,7 +61,7 @@ public class AppInfoDataServiceImpl implements AppInfoDataService {
   @Override
   public Future<Void> createApp(VirtualNoApp virtualNoApp) {
     Promise<Void> result = Promise.promise();
-    SqlTemplate.forUpdate(pgPool, sqlQueries.get(SqlQuery.CREATE_APP))
+    SqlTemplate.forUpdate(pgPool, sqlQueries.get("create-app"))
       .mapFrom(VirtualNoAppParametersMapper.INSTANCE)
       .execute(virtualNoApp)
       .onSuccess(success -> {
@@ -83,7 +82,7 @@ public class AppInfoDataServiceImpl implements AppInfoDataService {
     updateParams.put("appKey", appKey);
     updateParams.put("secret", secret);
     updateParams.put("appId", appId);
-    SqlTemplate.forUpdate(pgPool, sqlQueries.get(SqlQuery.SAVE_APP))
+    SqlTemplate.forUpdate(pgPool, sqlQueries.get("save-app"))
       .execute(updateParams)
       .onSuccess(success -> {
         logger.info("update app success");
@@ -99,7 +98,7 @@ public class AppInfoDataServiceImpl implements AppInfoDataService {
   @Override
   public Future<Void> deleteApp(String appId) {
     Promise<Void> result = Promise.promise();
-    SqlTemplate.forUpdate(pgPool, sqlQueries.get(SqlQuery.DELETE_APP))
+    SqlTemplate.forUpdate(pgPool, sqlQueries.get("delete-app"))
       .execute(Collections.singletonMap("appId", appId))
       .onSuccess(success -> {
         logger.info("delete app success");

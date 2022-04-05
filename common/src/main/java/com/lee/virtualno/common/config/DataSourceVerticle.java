@@ -14,7 +14,7 @@ public class DataSourceVerticle extends MicroServiceVerticle {
   public void start() throws Exception {
     super.start();
     JsonObject pgConfig = new JsonObject().put("host","localhost")
-        .put("port", 5432).put("database", "virtualno").put("user", "postgres")
+        .put("port", 5432).put("database", "postgres").put("user", "postgres")
         .put("password", "postgres");
     JsonObject poolConfig = new JsonObject()
       .put("maxSize", 16).put("maxWaitQueueSize", -1).put("idleTimeout", 0).put("idleTimeoutUnit", TimeUnit.SECONDS)

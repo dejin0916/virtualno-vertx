@@ -24,7 +24,7 @@ public interface AppInfoDataService {
   Future<Void> deleteApp(String appId);
 
   @GenIgnore
-  static AppInfoDataService create(HashMap<SqlQuery, String> sqlQueries, PgPool pgPool) {
+  static AppInfoDataService create(HashMap<String, String> sqlQueries, PgPool pgPool) {
     return new AppInfoDataServiceImpl(sqlQueries, pgPool);
   }
 
