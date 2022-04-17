@@ -4,7 +4,6 @@ import io.vertx.core.json.JsonObject;
 import io.vertx.core.json.JsonArray;
 import io.vertx.core.json.impl.JsonUtil;
 import java.time.Instant;
-import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.Base64;
 
@@ -17,8 +16,6 @@ public class VirtualNoUserConverter {
 
   private static final Base64.Decoder BASE64_DECODER = JsonUtil.BASE64_DECODER;
   private static final Base64.Encoder BASE64_ENCODER = JsonUtil.BASE64_ENCODER;
-  private static final DateTimeFormatter df = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
-
 
   public static void fromJson(Iterable<java.util.Map.Entry<String, Object>> json, VirtualNoUser obj) {
     for (java.util.Map.Entry<String, Object> member : json) {
@@ -53,17 +50,6 @@ public class VirtualNoUserConverter {
             obj.setUsername((String)member.getValue());
           }
           break;
-        // codegen目前不支持LocalDateTime类型字段的处理，只能手动改下
-        case "createdDate":
-          if (member.getValue() instanceof String) {
-            obj.setCreatedDate(LocalDateTime.parse((String)member.getValue(), df));
-          }
-          break;
-        case "updatedDate":
-          if (member.getValue() instanceof String) {
-            obj.setUpdatedDate(LocalDateTime.parse((String)member.getValue(), df));
-          }
-          break;
       }
     }
   }
@@ -90,13 +76,6 @@ public class VirtualNoUserConverter {
     }
     if (obj.getUsername() != null) {
       json.put("username", obj.getUsername());
-    }
-    // codegen目前不支持LocalDateTime类型字段的处理，只能手动改下
-    if (obj.getCreatedDate() != null) {
-      json.put("createdDate", df.format(obj.getCreatedDate()));
-    }
-    if (obj.getUpdatedDate() != null) {
-      json.put("updatedDate", df.format(obj.getUpdatedDate()));
     }
   }
 }

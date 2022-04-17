@@ -134,7 +134,7 @@ public class HttpUserApiVerticle extends MicroServiceVerticle {
   private void authenticate(RoutingContext context) {
     authProvider.authenticate(context.getBodyAsJson())
       .onSuccess(success -> {
-        logger.info("authentication success");
+        logger.info("authenticate success");
         context.response()
           .putHeader("content-type", "application/text")
           .setStatusCode(200).end("authenticate success");
