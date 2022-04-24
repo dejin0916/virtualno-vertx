@@ -2,6 +2,7 @@ package com.lee.virtualno.user.api;
 
 import com.lee.virtualno.common.MicroServiceVerticle;
 import com.lee.virtualno.common.discovery.PgPoolDataSource;
+import com.lee.virtualno.common.pojo.ReturnResult;
 import com.lee.virtualno.user.databases.VirtualNoUserDataService;
 import com.lee.virtualno.user.entity.VirtualNoUser;
 import io.vertx.core.Promise;
@@ -97,21 +98,27 @@ public class HttpUserApiVerticle extends MicroServiceVerticle {
         context.response()
           .putHeader("content-type", "application/text")
           .setStatusCode(200)
-          .end("success");
+          .end(ReturnResult.success());
       })
       .onFailure(err -> {
         logger.error("populate user info failed", err);
-        context.response().setStatusCode(500).end("failed");
+        context.response().setStatusCode(500).end(ReturnResult.failed(err.getMessage()));
       });
   }
 
   private void fetchUser(RoutingContext context) {
     String username = context.pathParam("username");
     virtualNoUserDataService.fetchUser(username)
-      .onSuccess(user -> context.response()
-        .putHeader("content-type", "application/text")
-        .setStatusCode(200).end(user.toJson().encode()))
-      .onFailure(err -> context.response().setStatusCode(500).end("fetch user failed"));
+      .onSuccess(user -> {
+        user.setPassword(null);
+        context.response()
+          .putHeader("content-type", "application/text")
+          .setStatusCode(200).end(ReturnResult.success(user));
+      })
+      .onFailure(err -> {
+        logger.error("populate user info failed", err);
+        context.response().setStatusCode(500).end(ReturnResult.failed(err.getMessage()));
+      });
   }
 
   private void updateUser(RoutingContext context) {
@@ -120,6 +127,7 @@ public class HttpUserApiVerticle extends MicroServiceVerticle {
     random.nextBytes(salt);
     VirtualNoUser body = context.getBodyAsJson().mapTo(VirtualNoUser.class);
     String password = body.getPassword();
+    // 使用vertx authentication默认的hash方法
     String hash = strategy.hash("pbkdf2", null, base64Encode(salt), password);
     body.setPassword(hash);
     String username = context.pathParam("username");
@@ -127,8 +135,8 @@ public class HttpUserApiVerticle extends MicroServiceVerticle {
     body.setUpdatedDate(LocalDateTime.now());
     virtualNoUserDataService.updateUser(body)
       .onSuccess(success -> context.response().putHeader("content-type", "application/text")
-        .setStatusCode(200).end("success"))
-      .onFailure(err -> context.response().setStatusCode(500).end("update user failed"));
+        .setStatusCode(200).end(ReturnResult.success()))
+      .onFailure(err -> context.response().setStatusCode(500).end(ReturnResult.failed(err.getMessage())));
   }
 
   private void authenticate(RoutingContext context) {

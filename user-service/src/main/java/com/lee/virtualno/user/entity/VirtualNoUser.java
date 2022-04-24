@@ -1,6 +1,7 @@
 package com.lee.virtualno.user.entity;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
+import com.fasterxml.jackson.annotation.JsonInclude;
 import io.vertx.codegen.annotations.DataObject;
 import io.vertx.core.json.JsonObject;
 import io.vertx.sqlclient.templates.annotations.Column;
@@ -9,6 +10,7 @@ import io.vertx.sqlclient.templates.annotations.RowMapped;
 
 import java.time.LocalDateTime;
 
+@JsonInclude(JsonInclude.Include.NON_NULL)
 @DataObject(generateConverter = true)
 @RowMapped
 @ParametersMapped

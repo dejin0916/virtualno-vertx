@@ -118,7 +118,7 @@ public class PublicApiVerticle extends AbstractVerticle {
         context.response().putHeader("Content-Type", "application/jwt").end(token);
       }).onFailure(err -> {
         logger.error("Authentication error", err);
-        context.fail(401);
+        context.response().setStatusCode(401).end("Authentication error");
       });
   }
 

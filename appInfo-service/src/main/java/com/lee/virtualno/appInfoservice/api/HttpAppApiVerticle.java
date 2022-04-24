@@ -3,8 +3,8 @@ package com.lee.virtualno.appInfoservice.api;
 import com.lee.virtualno.appInfoservice.databases.AppInfoDataService;
 import com.lee.virtualno.appInfoservice.entity.VirtualNoApp;
 import com.lee.virtualno.common.MicroServiceVerticle;
+import com.lee.virtualno.common.pojo.ReturnResult;
 import io.vertx.core.Promise;
-import io.vertx.core.json.Json;
 import io.vertx.core.json.JsonObject;
 import io.vertx.ext.web.Router;
 import io.vertx.ext.web.RoutingContext;
@@ -32,7 +32,6 @@ public class HttpAppApiVerticle extends MicroServiceVerticle {
     router.post().handler(bodyHandler);
     router.patch().handler(bodyHandler);
 
-    router.get("/").handler(this::home);
     router.get("/app").handler(this::fetchAllApplication);
     router.post("/app").handler(this::addApplication);
     router.get("/app/:appId").handler(this::fetchApplication);
@@ -50,16 +49,11 @@ public class HttpAppApiVerticle extends MicroServiceVerticle {
       .onFailure(err -> logger.error("app-service start failed", err));
   }
 
-  private void home(RoutingContext context) {
-    context.response().end("hello");
-  }
-
-
   private void fetchAllApplication(RoutingContext context) {
     appDataService.fetchAllApps()
-      .onSuccess(success -> context.response().setStatusCode(200).putHeader("content-type", "application/json")
-        .end(Json.encodePrettily(success)))
-      .onFailure(err -> context.response().setStatusCode(404).end());
+      .onSuccess(apps -> context.response().setStatusCode(200).putHeader("content-type", "application/json")
+        .end(ReturnResult.success(apps)))
+      .onFailure(err -> context.response().setStatusCode(404).end(ReturnResult.failed("not found apps")));
   }
 
 
@@ -67,16 +61,16 @@ public class HttpAppApiVerticle extends MicroServiceVerticle {
     appDataService.createApp(context.getBodyAsJson().mapTo(VirtualNoApp.class))
       .onSuccess(success -> context.response().setStatusCode(200)
         .putHeader("content-type", "application/json").end("add app success"))
-      .onFailure(err -> context.response().setStatusCode(500).end(err.getMessage()));
+      .onFailure(err -> context.response().setStatusCode(500).end(ReturnResult.failed(err.getMessage())));
   }
 
   private void fetchApplication(RoutingContext context) {
     String appId = context.pathParam("appId");
     logger.info("appId is {}", appId);
     appDataService.fetchAppByAppId(appId)
-      .onSuccess(success -> context.response().setStatusCode(200).putHeader("content-type", "application/json")
-        .end(Json.encodePrettily(success)))
-      .onFailure(err -> context.response().setStatusCode(404).end());
+      .onSuccess(app -> context.response().setStatusCode(200).putHeader("content-type", "application/json")
+        .end(ReturnResult.success(app)))
+      .onFailure(err -> context.response().setStatusCode(404).end(ReturnResult.failed("not found this app")));
   }
 
   private void updateApplication(RoutingContext context) {
@@ -86,14 +80,15 @@ public class HttpAppApiVerticle extends MicroServiceVerticle {
     String secret = body.getString("secret");
     appDataService.saveApp(appId, appKey, secret)
       .onSuccess(success -> context.response().setStatusCode(200)
-        .putHeader("content-type", "application/json").end("update success success"))
-      .onFailure(err -> context.response().setStatusCode(500).end(err.getMessage()));
+        .putHeader("content-type", "application/json").end(ReturnResult.success("update app success")))
+      .onFailure(err -> context.response().setStatusCode(500).end(ReturnResult.failed(err.getMessage())));
   }
 
   private void deleteApplication(RoutingContext context) {
     appDataService.deleteApp(context.pathParam("appId"))
       .onSuccess(success -> context.response().setStatusCode(200)
-        .putHeader("content-type", "application/json").end("delete app success"))
-      .onFailure(err -> context.response().setStatusCode(500).end(err.getMessage()));
+        .putHeader("content-type", "application/json")
+        .end(ReturnResult.success("delete app success")))
+      .onFailure(err -> context.response().setStatusCode(500).end(ReturnResult.failed(err.getMessage())));
   }
 }

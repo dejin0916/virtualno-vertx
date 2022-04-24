@@ -16,9 +16,10 @@ import io.vertx.servicediscovery.types.EventBusService;
 import io.vertx.servicediscovery.types.HttpEndpoint;
 import io.vertx.servicediscovery.types.MessageSource;
 
-import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -40,7 +41,7 @@ public class MicroServiceVerticle extends AbstractVerticle {
     String queriesFile = config().getString(CONFIG_APP_SQL_QUERIES_RESOURCE_FILE);
     InputStream queriesInputStream;
     if (queriesFile != null) {
-      queriesInputStream = new FileInputStream(queriesFile);
+      queriesInputStream = Files.newInputStream(Paths.get(queriesFile));
     } else {
       queriesInputStream = getClass().getResourceAsStream("/sql.properties");
     }
