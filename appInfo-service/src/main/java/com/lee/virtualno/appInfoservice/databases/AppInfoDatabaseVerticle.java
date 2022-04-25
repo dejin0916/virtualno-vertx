@@ -4,6 +4,7 @@ import com.lee.virtualno.common.MicroServiceVerticle;
 import com.lee.virtualno.common.discovery.PgPoolDataSource;
 import io.vertx.core.Promise;
 import io.vertx.pgclient.PgPool;
+import io.vertx.servicediscovery.ServiceDiscovery;
 import io.vertx.serviceproxy.ServiceBinder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -33,7 +34,7 @@ public class AppInfoDatabaseVerticle extends MicroServiceVerticle {
   }
 
   @Override
-  public void stop(Promise<Void> promise) throws Exception {
-
+  public void stop() {
+    ServiceDiscovery.releaseServiceObject(discovery, pgPool);
   }
 }

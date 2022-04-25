@@ -16,6 +16,7 @@ import io.vertx.ext.web.Router;
 import io.vertx.ext.web.RoutingContext;
 import io.vertx.ext.web.handler.BodyHandler;
 import io.vertx.pgclient.PgPool;
+import io.vertx.servicediscovery.ServiceDiscovery;
 import io.vertx.sqlclient.templates.SqlTemplate;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -153,5 +154,10 @@ public class HttpUserApiVerticle extends MicroServiceVerticle {
           .putHeader("content-type", "application/text")
           .setStatusCode(401).end("authenticate failed");
       });
+  }
+
+  @Override
+  public void stop() {
+    ServiceDiscovery.releaseServiceObject(discovery, pgPool);
   }
 }
