@@ -3,9 +3,11 @@ package com.lee.virtualno.appInfoservice.databases;
 import com.lee.virtualno.appInfoservice.entity.VirtualNoApp;
 import com.lee.virtualno.appInfoservice.entity.VirtualNoAppParametersMapper;
 import com.lee.virtualno.appInfoservice.entity.VirtualNoAppRowMapper;
+import com.lee.virtualno.common.database.PageResult;
 import io.vertx.core.Future;
 import io.vertx.core.Promise;
 import io.vertx.pgclient.PgPool;
+import io.vertx.sqlclient.Row;
 import io.vertx.sqlclient.templates.SqlTemplate;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -39,6 +41,41 @@ public class AppInfoDataServiceImpl implements AppInfoDataService {
       })
       .onFailure(err -> {
         logger.error("fetch all apps caught error", err);
+        result.fail(err);
+      });
+    return result.future();
+  }
+
+  @Override
+  public Future<PageResult<VirtualNoApp>> pageAllApps(int pageNum, int pageSize) {
+    Map<String, Object> params = new HashMap<>();
+    params.put("limit", pageSize);
+    params.put("offset",pageNum > 0 ? (pageNum - 1) * pageSize : 0);
+    Promise<PageResult<VirtualNoApp>> result = Promise.promise();
+    SqlTemplate.forQuery(pgPool, sqlQueries.get("count-page-apps"))
+      .mapTo(Row::toJson)
+      .execute(params).onSuccess(row -> {
+        int count = row.iterator().next().getInteger("count");
+        if(count <= 0) {
+          result.complete(new PageResult<VirtualNoApp>(0, pageNum, pageSize).setData(new ArrayList<>()));
+        } else {
+          SqlTemplate.forQuery(pgPool, sqlQueries.get("page-apps"))
+            .mapTo(VirtualNoAppRowMapper.INSTANCE)
+            .execute(params)
+            .onSuccess(rows -> {
+              logger.info("page apps success");
+              List<VirtualNoApp> numbers = new ArrayList<>();
+              rows.forEach(numbers::add);
+              result.complete(new PageResult<VirtualNoApp>(count, pageNum, pageSize).setData(numbers));
+            })
+            .onFailure(err -> {
+              logger.error("page apps failed", err);
+              result.fail(err);
+            });
+        }
+      })
+      .onFailure(err -> {
+        logger.error("count apps failed", err);
         result.fail(err);
       });
     return result.future();

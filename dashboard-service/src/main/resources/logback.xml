@@ -8,8 +8,7 @@
 
   <logger name="io.netty" level="warn"/>
   <logger name="io.vertx" level="info"/>
-  <logger name="com.lee.virtualno.user" level="debug"/>
-  <logger name="org.apache.zookeeper" level="warn"/>
+  <logger name="com.lee.virtualno.dashboard" level="debug"/>
   <root level="debug">
     <appender-ref ref="STDOUT"/>
   </root>

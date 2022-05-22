@@ -1,6 +1,7 @@
 package com.lee.virtualno.appInfoservice.databases;
 
 import com.lee.virtualno.appInfoservice.entity.VirtualNoApp;
+import com.lee.virtualno.common.database.PageResult;
 import io.vertx.codegen.annotations.GenIgnore;
 import io.vertx.codegen.annotations.ProxyGen;
 import io.vertx.core.Future;
@@ -14,6 +15,8 @@ import java.util.List;
 public interface AppInfoDataService {
 
   Future<List<VirtualNoApp>> fetchAllApps();
+
+  Future<PageResult<VirtualNoApp>> pageAllApps(int pageNum, int pageSize);
 
   Future<VirtualNoApp> fetchAppByAppId(String appId);
 

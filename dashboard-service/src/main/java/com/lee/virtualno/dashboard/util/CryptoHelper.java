@@ -1,4 +1,4 @@
-package com.ldj.virtualno.apiservice.util;
+package com.lee.virtualno.dashboard.util;
 
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
@@ -17,7 +17,7 @@ public class CryptoHelper {
   }
 
   private static String read(String file) throws IOException {
-    Path path = Paths.get("api-service", file);
+    Path path = Paths.get("dashboard-service/src/main/resources", file);
     if (!path.toFile().exists()) {
       path = Paths.get("..", file);
     }

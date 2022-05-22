@@ -21,7 +21,7 @@
       <artifactId>common</artifactId>
       <version>1.0.0-SNAPSHOT</version>
     </dependency>
-    <!--此依赖详见这个issues https://github.com/eclipse-vertx/vertx-sql-client/issues/1059-->
+    <!-- 此依赖详见这个issues https://github.com/eclipse-vertx/vertx-sql-client/issues/1059 -->
     <dependency>
       <groupId>com.ongres.scram</groupId>
       <artifactId>client</artifactId>

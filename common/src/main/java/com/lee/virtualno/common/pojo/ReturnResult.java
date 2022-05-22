@@ -6,7 +6,8 @@ import io.vertx.core.json.Json;
 import java.io.Serializable;
 
 /**
- * 参见这篇文章的争论，针对有些不好用http状态码表示的业务返回信息，body中设置
+ * <a href="https://coolshell.cn/articles/21672.html">https://coolshell.cn/articles/21672.html</a>
+ * 参见这篇文章的观点和评论区的争论，针对有些不好用http状态码表示的业务返回信息，body中设置
  * @param <T>
  */
 @JsonInclude(JsonInclude.Include.NON_NULL)

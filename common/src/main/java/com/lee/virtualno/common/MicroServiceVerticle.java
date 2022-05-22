@@ -1,7 +1,6 @@
 package com.lee.virtualno.common;
 
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
-import com.lee.virtualno.common.discovery.PgPoolDataSource;
 import io.vertx.core.AbstractVerticle;
 import io.vertx.core.CompositeFuture;
 import io.vertx.core.Future;
@@ -33,7 +32,14 @@ public class MicroServiceVerticle extends AbstractVerticle {
   public void start() throws Exception {
     DatabindCodec.mapper().registerModule(new JavaTimeModule());
     DatabindCodec.prettyMapper().registerModule(new JavaTimeModule());
-    discovery = ServiceDiscovery.create(vertx, new ServiceDiscoveryOptions().setBackendConfiguration(config()));
+    discovery = ServiceDiscovery.create(vertx, new ServiceDiscoveryOptions()
+      .setBackendConfiguration(
+        new JsonObject()
+          .put("connection", "127.0.0.1:2181")
+          .put("ephemeral", true)
+          .put("guaranteed", true)
+          .put("basePath", "/services")
+      ));
     sqlQueries = loadSqlQueries();
   }
 
@@ -77,11 +83,6 @@ public class MicroServiceVerticle extends AbstractVerticle {
 
   public Future<Void> publishEventBusService(String name, String address, Class<?> serviceClass) {
     Record record = EventBusService.createRecord(name, address, serviceClass);
-    return publish(record);
-  }
-
-  public Future<Void> publishPgPoolDataSource(String name, JsonObject location, JsonObject metadata) {
-    Record record = PgPoolDataSource.createRecord(name, location, metadata);
     return publish(record);
   }
 

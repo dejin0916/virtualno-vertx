@@ -1,7 +1,6 @@
 package com.lee.virtualno.user.api;
 
 import com.lee.virtualno.common.MicroServiceVerticle;
-import com.lee.virtualno.common.discovery.PgPoolDataSource;
 import com.lee.virtualno.common.pojo.ReturnResult;
 import com.lee.virtualno.user.databases.VirtualNoUserDataService;
 import com.lee.virtualno.user.entity.VirtualNoUser;
@@ -15,8 +14,9 @@ import io.vertx.ext.auth.sqlclient.SqlUserUtil;
 import io.vertx.ext.web.Router;
 import io.vertx.ext.web.RoutingContext;
 import io.vertx.ext.web.handler.BodyHandler;
+import io.vertx.pgclient.PgConnectOptions;
 import io.vertx.pgclient.PgPool;
-import io.vertx.servicediscovery.ServiceDiscovery;
+import io.vertx.sqlclient.PoolOptions;
 import io.vertx.sqlclient.templates.SqlTemplate;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -25,6 +25,7 @@ import java.security.SecureRandom;
 import java.time.LocalDateTime;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.concurrent.TimeUnit;
 
 import static io.vertx.ext.auth.impl.Codec.base64Encode;
 
@@ -43,18 +44,17 @@ public class HttpUserApiVerticle extends MicroServiceVerticle {
   @Override
   public void start(Promise<Void> promise) throws Exception {
     super.start();
-    PgPoolDataSource.getPgPool(discovery, record -> record.getName().equals("virtualno-pgpool"))
-      .onSuccess(pool -> {
-        logger.info("look up pg pool success");
-        pgPool = pool;
-      })
-      .onFailure(err -> {
-        logger.error("look up pg pool caught error", err);
-        promise.fail(err);
-      });
+
+    JsonObject pgConfig = new JsonObject().put("host","localhost")
+      .put("port", 5432).put("database", "postgres").put("user", "postgres")
+      .put("password", "postgres");
+    JsonObject poolConfig = new JsonObject()
+      .put("maxSize", 16).put("maxWaitQueueSize", 64).put("idleTimeout", 0).put("idleTimeoutUnit", TimeUnit.SECONDS)
+      .put("shared", true).put("name", "virtualno-pool").put("eventLoopSize",4);
+
+    pgPool = PgPool.pool(vertx, new PgConnectOptions(pgConfig), new PoolOptions(poolConfig));
 
     virtualNoUserDataService = VirtualNoUserDataService.create(sqlQueries, pgPool);
-
     authProvider = SqlAuthentication.create(pgPool,
       new SqlAuthenticationOptions().setAuthenticationQuery(sqlQueries.get("authentication-sql")));
     userUtil = SqlUserUtil.create(pgPool, sqlQueries.get("register-user"), null, null);
@@ -67,11 +67,22 @@ public class HttpUserApiVerticle extends MicroServiceVerticle {
     router.get("/:username").handler(this::fetchUser);
     router.put("/:username").handler(this::updateUser);
     router.post("/authenticate").handler(this::authenticate);
+
+    publishHttpEndpoint("user", "localhost", config().getInteger("http.port", 9999))
+      .onSuccess(success -> logger.info("UserInfoService (App endpoint) service published"))
+      .onFailure(Throwable::printStackTrace);
+
     vertx.createHttpServer()
       .requestHandler(router)
       .listen(9999)
-      .onSuccess(success -> logger.info("user api expose on port 9999"))
-      .onFailure(err -> logger.error("user api expose failed", err));
+      .onSuccess(success -> {
+        logger.info("user api expose on port 9999");
+        promise.complete();
+      })
+      .onFailure(err -> {
+        logger.error("user api expose failed", err);
+        promise.fail(err);
+      });
   }
 
   private void register(RoutingContext context) {
@@ -111,13 +122,14 @@ public class HttpUserApiVerticle extends MicroServiceVerticle {
     String username = context.pathParam("username");
     virtualNoUserDataService.fetchUser(username)
       .onSuccess(user -> {
+        logger.info("fetch user {} success", username);
         user.setPassword(null);
         context.response()
-          .putHeader("content-type", "application/text")
+          .putHeader("content-type", "application/json")
           .setStatusCode(200).end(ReturnResult.success(user));
       })
       .onFailure(err -> {
-        logger.error("populate user info failed", err);
+        logger.error("fetch user info failed", err);
         context.response().setStatusCode(500).end(ReturnResult.failed(err.getMessage()));
       });
   }
@@ -135,7 +147,7 @@ public class HttpUserApiVerticle extends MicroServiceVerticle {
     body.setUsername(username);
     body.setUpdatedDate(LocalDateTime.now());
     virtualNoUserDataService.updateUser(body)
-      .onSuccess(success -> context.response().putHeader("content-type", "application/text")
+      .onSuccess(success -> context.response().putHeader("content-type", "application/json")
         .setStatusCode(200).end(ReturnResult.success()))
       .onFailure(err -> context.response().setStatusCode(500).end(ReturnResult.failed(err.getMessage())));
   }
@@ -154,10 +166,5 @@ public class HttpUserApiVerticle extends MicroServiceVerticle {
           .putHeader("content-type", "application/text")
           .setStatusCode(401).end("authenticate failed");
       });
-  }
-
-  @Override
-  public void stop() {
-    ServiceDiscovery.releaseServiceObject(discovery, pgPool);
   }
 }

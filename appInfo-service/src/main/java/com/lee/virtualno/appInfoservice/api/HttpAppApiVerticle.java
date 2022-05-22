@@ -33,6 +33,7 @@ public class HttpAppApiVerticle extends MicroServiceVerticle {
     router.patch().handler(bodyHandler);
 
     router.get("/app").handler(this::fetchAllApplication);
+    router.get("/app/:pageNum/:pageSize").handler(this::pageApplication);
     router.post("/app").handler(this::addApplication);
     router.get("/app/:appId").handler(this::fetchApplication);
     router.patch("/app/:appId").handler(this::updateApplication);
@@ -54,6 +55,15 @@ public class HttpAppApiVerticle extends MicroServiceVerticle {
       .onSuccess(apps -> context.response().setStatusCode(200).putHeader("content-type", "application/json")
         .end(ReturnResult.success(apps)))
       .onFailure(err -> context.response().setStatusCode(404).end(ReturnResult.failed("not found apps")));
+  }
+
+  private void pageApplication(RoutingContext context) {
+    int pageNum = Integer.parseInt(context.pathParam("pageNum"));
+    int pageSize = Integer.parseInt(context.pathParam("pageSize"));
+    appDataService.pageAllApps(pageNum, pageSize)
+      .onSuccess(resp -> context.response().setStatusCode(200).putHeader("content-type", "application/json")
+        .end(ReturnResult.success(resp)))
+      .onFailure(err -> context.response().setStatusCode(500).end(ReturnResult.failed()));
   }
 
 
