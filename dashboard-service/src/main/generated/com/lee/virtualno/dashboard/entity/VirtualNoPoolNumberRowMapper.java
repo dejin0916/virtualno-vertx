@@ -42,6 +42,9 @@ public interface VirtualNoPoolNumberRowMapper extends io.vertx.sqlclient.templat
     if ((idx = row.getColumnIndex("virtual_number")) != -1 && (val = row.getString(idx)) != null) {
       obj.setVirtualNumber((java.lang.String)val);
     }
+    if ((idx = row.getColumnIndex("virtual_type")) != -1 && (val = row.getString(idx)) != null) {
+      obj.setVirtualType((java.lang.String)val);
+    }
     return obj;
   }
 }

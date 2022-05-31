@@ -1,5 +1,6 @@
 package com.lee.virtualno.dashboard.databases;
 
+import com.lee.virtualno.common.constant.CommConstant;
 import com.lee.virtualno.common.database.PageResult;
 import com.lee.virtualno.dashboard.entity.VirtualNoPoolNumber;
 import com.lee.virtualno.dashboard.entity.VirtualNoPoolNumberParametersMapper;
@@ -7,25 +8,25 @@ import com.lee.virtualno.dashboard.entity.VirtualNoPoolNumberRowMapper;
 import io.vertx.core.Future;
 import io.vertx.core.Promise;
 import io.vertx.pgclient.PgPool;
+import io.vertx.redis.client.RedisAPI;
 import io.vertx.sqlclient.Row;
 import io.vertx.sqlclient.templates.SqlTemplate;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 public class VirtualNoPoolNumberDataServiceImpl implements VirtualNoPoolNumberDataService {
 
   private static final Logger logger = LoggerFactory.getLogger(VirtualNoPoolNumberDataServiceImpl.class);
   private final HashMap<String, String> sqlQueries;
   private final PgPool pgPool;
+  private final RedisAPI redisApi;
 
-  public VirtualNoPoolNumberDataServiceImpl(HashMap<String, String> sqlQueries, PgPool pgPool) {
+  public VirtualNoPoolNumberDataServiceImpl(HashMap<String, String> sqlQueries, PgPool pgPool, RedisAPI redisApi) {
     this.sqlQueries = sqlQueries;
     this.pgPool = pgPool;
+    this.redisApi = redisApi;
   }
 
   @Override
@@ -35,6 +36,17 @@ public class VirtualNoPoolNumberDataServiceImpl implements VirtualNoPoolNumberDa
       .mapFrom(VirtualNoPoolNumberParametersMapper.INSTANCE)
       .execute(poolNumber)
       .onSuccess(success -> {
+        redisApi.zadd(Arrays.asList(
+          String.format(CommConstant.VN_BIND_TIMES_POOL, poolNumber.getSerialNumber()),
+          poolNumber.getVirtualNumber(), "0"))
+          .flatMap(response -> {
+            if(CommConstant.TYPE_AX.equals(poolNumber.getVirtualType())) {
+              return redisApi.zadd(Arrays.asList(
+                String.format(CommConstant.VN_DIALED_TIMES_POOL, poolNumber.getSerialNumber()),
+                poolNumber.getVirtualNumber(), "0"));
+            }
+            return null;
+          });
         logger.info("create virtualno success");
         result.complete();
       })

@@ -17,7 +17,6 @@
 package com.lee.virtualno.appInfoservice.databases;
 
 import com.lee.virtualno.appInfoservice.databases.AppInfoDataService;
-import com.lee.virtualno.common.codec.PageResultCodec;
 import io.vertx.core.Vertx;
 import io.vertx.core.Handler;
 import io.vertx.core.AsyncResult;
@@ -54,7 +53,7 @@ import io.vertx.core.Future;
 @SuppressWarnings({"unchecked", "rawtypes"})
 public class AppInfoDataServiceVertxProxyHandler extends ProxyHandler {
 
-  public static final long DEFAULT_CONNECTION_TIMEOUT = 5 * 60; // 5 minutes
+  public static final long DEFAULT_CONNECTION_TIMEOUT = 5 * 60; // 5 minutes 
   private final Vertx vertx;
   private final AppInfoDataService service;
   private final long timerID;
@@ -82,8 +81,6 @@ public class AppInfoDataServiceVertxProxyHandler extends ProxyHandler {
       try {
         this.vertx.eventBus().registerDefaultCodec(ServiceException.class,
             new ServiceExceptionMessageCodec());
-        // 手动注册自定义codec
-        this.vertx.eventBus().registerCodec(new PageResultCodec());
       } catch (IllegalStateException ex) {}
       if (timeoutSeconds != -1 && !topLevel) {
         long period = timeoutSeconds * 1000 / 2;
@@ -136,14 +133,7 @@ public class AppInfoDataServiceVertxProxyHandler extends ProxyHandler {
         }
         case "pageAllApps": {
           service.pageAllApps(json.getValue("pageNum") == null ? null : (json.getLong("pageNum").intValue()),
-                        json.getValue("pageSize") == null ? null : (json.getLong("pageSize").intValue())).onComplete(res -> {
-            if (res.failed()) {
-              HelperUtils.manageFailure(msg, res.cause(), includeDebugInfo);
-            } else {
-              // 此处手动设置自定义codec
-              msg.reply(res.result() != null ? res.result().toJson() : null, new DeliveryOptions().setCodecName("PageResultCodec"));
-            }
-          });
+                        json.getValue("pageSize") == null ? null : (json.getLong("pageSize").intValue())).onComplete(HelperUtils.createHandler(msg, includeDebugInfo));
           break;
         }
         case "fetchAppByAppId": {

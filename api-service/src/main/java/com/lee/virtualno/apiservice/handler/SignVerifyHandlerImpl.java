@@ -1,6 +1,8 @@
-package com.ldj.virtualno.apiservice.handler;
+package com.lee.virtualno.apiservice.handler;
 
 import com.lee.virtualno.common.pojo.ReturnResult;
+import io.vertx.core.Future;
+import io.vertx.core.Promise;
 import io.vertx.core.http.HttpHeaders;
 import io.vertx.core.http.HttpServerRequest;
 import io.vertx.core.json.JsonObject;
@@ -8,7 +10,6 @@ import io.vertx.ext.auth.HashingStrategy;
 import io.vertx.ext.web.RoutingContext;
 import io.vertx.ext.web.client.WebClient;
 import io.vertx.ext.web.client.predicate.ResponsePredicate;
-import io.vertx.ext.web.codec.BodyCodec;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -38,33 +39,36 @@ public class SignVerifyHandlerImpl implements SignVerifyHandler {
       return;
     }
 
-    JsonObject app = getCredentByWebClient(appId, context);
-    String secret = app.getString("secret");
-    String key = app.getString("appKey");
-
-    if(!strategy.verify(sign, secret + key + requestTimeStamp)) {
-      context.response()
-        .putHeader(HttpHeaders.CONTENT_TYPE, "application/json")
-        .end(ReturnResult.failed("app verify failed"));
-      return;
-    }
-    context.next();
+    getAppInfo(appId, context)
+      .onSuccess(app -> {
+        String key = app.getString("appKey");
+        String secret = app.getString("secret");
+        if(!strategy.verify(sign,  key + secret + requestTimeStamp)) {
+          context.response()
+            .putHeader(HttpHeaders.CONTENT_TYPE, "application/json")
+            .end(ReturnResult.failed("app verify failed"));
+          return;
+        }
+        context.next();
+      })
+      .onFailure(err -> logger.error("get app info failed", err));
   }
 
-  private JsonObject getCredentByWebClient(String appId, RoutingContext context) {
-    JsonObject app = new JsonObject();
+  private Future<JsonObject> getAppInfo(String appId, RoutingContext context) {
+    Promise<JsonObject> promise = Promise.promise();
     WebClient webClient = WebClient.create(context.vertx());
     webClient.get(8888, "localhost", "/app/" + appId)
       .expect(ResponsePredicate.SC_SUCCESS)
-      .as(BodyCodec.jsonObject())
       .send()
-      .onSuccess(result -> result.body().mergeIn(app))
+      .onSuccess(result -> {
+        // todo 设置缓存
+        logger.info(result.bodyAsJsonObject().getJsonObject("data").encodePrettily());
+        promise.complete(result.bodyAsJsonObject().getJsonObject("data"));
+      })
       .onFailure(err -> {
         logger.error(err.getMessage());
-        context.response()
-          .putHeader(HttpHeaders.CONTENT_TYPE, "application/json")
-          .end(ReturnResult.failed("get app info failed"));
+        promise.fail(err);
       });
-    return app;
+    return promise.future();
   }
 }

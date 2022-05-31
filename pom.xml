@@ -32,6 +32,8 @@
     <logback.version>1.2.11</logback.version>
     <scram.version>2.1</scram.version>
     <commons-lang3.version>3.8.1</commons-lang3.version>
+    <quartz.version>2.3.2</quartz.version>
+    <assertj-core.version>3.8.0</assertj-core.version>
 
     <launcher.class>io.vertx.core.Launcher</launcher.class>
   </properties>

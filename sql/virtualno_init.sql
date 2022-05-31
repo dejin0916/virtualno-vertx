@@ -221,4 +221,7 @@ create index idx_virtualno_pn_vn on public.virtualno_pool_number using btree (vi
 
 alter table public.virtualno_pool_number owner to virtualno;
 grant all on table public.virtualno_pool_number to virtualno;
+alter table public.virtualno_pool_number add column virtual_type varchar(5);
+COMMENT ON COLUMN public.virtualno_pool_number.virtual_type IS '虚拟号类型，AX, AXB';
+
 ----------------------------------------------------------------------------------------------------------------

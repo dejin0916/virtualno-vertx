@@ -24,6 +24,9 @@ public class VirtualNoPoolNumber implements Serializable {
   @Column(name = "area_code")
   private String areaCode;
 
+  @Column(name = "virtual_type")
+  private String virtualType;
+
   @Column(name = "enable")
   private boolean enable;
 
@@ -75,6 +78,14 @@ public class VirtualNoPoolNumber implements Serializable {
 
   public void setAreaCode(String areaCode) {
     this.areaCode = areaCode;
+  }
+
+  public String getVirtualType() {
+    return virtualType;
+  }
+
+  public void setVirtualType(String virtualType) {
+    this.virtualType = virtualType;
   }
 
   public boolean isEnable() {

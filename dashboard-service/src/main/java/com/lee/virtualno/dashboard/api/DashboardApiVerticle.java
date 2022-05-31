@@ -22,6 +22,10 @@ import io.vertx.ext.web.handler.CorsHandler;
 import io.vertx.ext.web.handler.JWTAuthHandler;
 import io.vertx.pgclient.PgConnectOptions;
 import io.vertx.pgclient.PgPool;
+import io.vertx.redis.client.Redis;
+import io.vertx.redis.client.RedisAPI;
+import io.vertx.redis.client.RedisClientType;
+import io.vertx.redis.client.RedisOptions;
 import io.vertx.servicediscovery.types.HttpEndpoint;
 import io.vertx.sqlclient.PoolOptions;
 import org.slf4j.Logger;
@@ -53,8 +57,16 @@ public class DashboardApiVerticle extends MicroServiceVerticle {
 
     PgPool pgPool = PgPool.pool(vertx, new PgConnectOptions(pgConfig), new PoolOptions(poolConfig));
 
+    RedisOptions redisOptions = new RedisOptions()
+      .setType(RedisClientType.STANDALONE)
+      .addConnectionString("redis://localhost:6379")
+      .setMaxPoolSize(4)
+      .setMaxPoolWaiting(16);
+    Redis redisClient = Redis.createClient(vertx, redisOptions);
+    RedisAPI redisApi = RedisAPI.api(redisClient);
+
     virtualNoPoolDataService = VirtualNoPoolDataService.create(sqlQueries, pgPool);
-    numberDataService = VirtualNoPoolNumberDataService.create(sqlQueries, pgPool);
+    numberDataService = VirtualNoPoolNumberDataService.create(sqlQueries, pgPool, redisApi);
 
     String publicKey = null;
     String privateKey = null;
@@ -145,7 +157,7 @@ public class DashboardApiVerticle extends MicroServiceVerticle {
               .put("username", username);
             JWTOptions jwtOptions = new JWTOptions()
               .setAlgorithm("RS256")
-              .setExpiresInMinutes(30)
+              .setExpiresInMinutes(8 * 60)
               .setIssuer("virtual-number")
               .setSubject(username);
             String token = jwtAuth.generateToken(claims, jwtOptions);

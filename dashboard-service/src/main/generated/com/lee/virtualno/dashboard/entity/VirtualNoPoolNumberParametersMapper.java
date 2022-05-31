@@ -29,6 +29,7 @@ public interface VirtualNoPoolNumberParametersMapper extends io.vertx.sqlclient.
     params.put("updatedBy", obj.getUpdatedBy());
     params.put("updatedDate", obj.getUpdatedDate());
     params.put("virtualNumber", obj.getVirtualNumber());
+    params.put("virtualType", obj.getVirtualType());
     return params;
   }
 }
