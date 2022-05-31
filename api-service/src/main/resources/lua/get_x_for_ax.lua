@@ -7,7 +7,7 @@ local function split(str, reps)
 end
 
 local timesKey1, timesKey2 = KEYS[1], KEYS[2]
-local sn, randomSeed = ARGV[1], tonumber(ARGV[2])
+local sn, randomSeed, area = ARGV[1], tonumber(ARGV[2]), ARGV[3]
 local vn
 local acount1, acount2, random
 local tblKeys = {}
@@ -31,8 +31,7 @@ for _, v in pairs(tblKeys) do
     vn = redis.call("ZRANGEBYSCORE", k, 0, 0, 'LIMIT', random - 1, random)
     if vn ~= nil and vn[1] ~= nil then
       redis.call("ZINCRBY", string.format("VN:POOL:{%s}:BIND:TIMES", sn), 1, vn[1])
-      local area = redis.call('HGET', string.format("VN:POOL:{%s}:VN:AREA", sn), vn[1])
-      if area ~= nill and type(area) ~= 'boolean' then
+      if area ~= nil then
         redis.call("ZINCRBY", string.format("VN:POOL:{%s}:%s:BIND:TIMES", sn, area), 1, vn[1])
       end
       return vn[1]

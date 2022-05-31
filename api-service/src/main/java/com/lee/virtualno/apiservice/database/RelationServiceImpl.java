@@ -9,8 +9,6 @@ import com.lee.virtualno.apiservice.util.ScriptReader;
 import com.lee.virtualno.common.constant.CommConstant;
 import io.vertx.core.Future;
 import io.vertx.core.Promise;
-import io.vertx.core.json.Json;
-import io.vertx.core.json.JsonObject;
 import io.vertx.pgclient.PgPool;
 import io.vertx.redis.client.RedisAPI;
 import io.vertx.sqlclient.templates.SqlTemplate;
@@ -20,7 +18,10 @@ import org.slf4j.LoggerFactory;
 import java.io.IOException;
 import java.nio.charset.Charset;
 import java.time.LocalDateTime;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Random;
 
 public class RelationServiceImpl implements RelationService {
   private static final Logger logger = LoggerFactory.getLogger(RelationServiceImpl.class);
@@ -54,11 +55,13 @@ public class RelationServiceImpl implements RelationService {
     }
     args.add(request.getSerialNumber());
     args.add(String.valueOf(random.nextInt(100)));
-    logger.info("args is {}", Json.encodePrettily(args));
+    args.add(request.getAreaCode());
     redisApi.eval(args).onSuccess(response -> {
       String virtualNumber = response.toString(Charset.defaultCharset());
+      logger.info("get virtual number {} success", virtualNumber);
       VirtualnoAxRel rel = new VirtualnoAxRel();
       rel.setAppId(request.getAppId());
+      rel.setBusinessId(request.getBusinessId());
       rel.setBusinessType(request.getBusinessType());
       rel.setAreaCode(request.getAreaCode());
       rel.setRealNumber(request.getRealNumber());
@@ -75,6 +78,9 @@ public class RelationServiceImpl implements RelationService {
           logger.info("add ax relation success");
         })
         .onFailure(error -> {
+          // 入库失败还原绑定次数
+          redisApi.zincrby(String.format(CommConstant.VN_BIND_TIMES_POOL, request.getSerialNumber()), "-1", virtualNumber);
+          redisApi.zincrby(String.format(CommConstant.VN_BIND_TIMES_POOL_WITH_AREA, request.getSerialNumber(), request.getAreaCode()), "-1", virtualNumber);
           logger.error("add ax relation failed", error);
           promise.fail(error);
         });
