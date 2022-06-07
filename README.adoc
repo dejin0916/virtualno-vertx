@@ -1,4 +1,0 @@
-= Virtualno-parent
-
-vertx实现的虚拟号平台
-
