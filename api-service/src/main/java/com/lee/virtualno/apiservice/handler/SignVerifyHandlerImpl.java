@@ -62,7 +62,6 @@ public class SignVerifyHandlerImpl implements SignVerifyHandler {
       .send()
       .onSuccess(result -> {
         // todo 设置缓存
-        logger.info(result.bodyAsJsonObject().getJsonObject("data").encodePrettily());
         promise.complete(result.bodyAsJsonObject().getJsonObject("data"));
       })
       .onFailure(err -> {

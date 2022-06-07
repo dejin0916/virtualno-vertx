@@ -22,21 +22,24 @@ end
 
 local function split(str, reps)
   local rs = {}
-  string.gsub(str,'[^'..reps..']+', function(w)
+  string.gsub(str,'[^'..reps..']+',function ( w )
     table.insert(rs, w)
   end)
+  return rs
 end
 
-local excludes, sn = cjson.decode(ARGV[1]), ARGV[3]
+
+local excludes, area, sn = cjson.decode(ARGV[1]), ARGV[2], ARGV[3]
 local rangeLimit = table.getn(excludes) + 1
 local vn
+-- 目前暂时写死，可以作为可配置项
 local dialLimit = 500
 local bindLimit = 500
 
 local tblKeys={}
 table.insert(tblKeys, 1, KEYS[1].."_"..dialLimit)
 table.insert(tblKeys, 2, KEYS[2].."_"..bindLimit)
-if nil ~= KEY[3] then
+if nil ~= KEYS[3] then
   table.insert(tblKeys, 3, KEYS[3].."_"..dialLimit)
   table.insert(tblKeys, 4, KEYS[4].."_"..bindLimit)
 end
@@ -49,10 +52,10 @@ for _, v in pairs(tblKeys) do
     vn = table_diff(vn, excludes)
     if vn ~= nil and vn[1] ~= nil then
       redis.call("ZINCRBY", string.format("VN:POOL:{%s}:BIND:TIMES", sn), 1, vn[1])
-      local area = redis.call('HGET', string.format("VN:POOL:{%s}:VN:AREA", sn), vn[1])
-      if area ~= nill and type(area) ~= 'boolean' then
+      if area ~= nil then
         redis.call("ZINCRBY", string.format("VN:POOL:{%s}:%s:BIND:TIMES", sn, area), 1, vn[1])
       end
+      return vn[1]
     end
   end
 end

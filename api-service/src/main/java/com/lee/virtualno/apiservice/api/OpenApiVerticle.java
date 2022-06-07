@@ -3,6 +3,7 @@ package com.lee.virtualno.apiservice.api;
 import com.lee.virtualno.apiservice.database.RelationService;
 import com.lee.virtualno.apiservice.handler.SignVerifyHandler;
 import com.lee.virtualno.apiservice.request.AxBindRequest;
+import com.lee.virtualno.apiservice.request.AxbBindRequest;
 import com.lee.virtualno.common.MicroServiceVerticle;
 import com.lee.virtualno.common.pojo.ReturnResult;
 import io.vertx.core.http.HttpHeaders;
@@ -87,7 +88,7 @@ public class OpenApiVerticle extends MicroServiceVerticle {
     String prefix = "/api/v1";
     SignVerifyHandler signVerifyHandler = SignVerifyHandler.create();
     router.get(prefix + "/sign/:appId").handler(this::generateSign);
-    router.post(prefix + "/ax/bind").handler(this::bindAx);
+    router.post(prefix + "/ax/bind").handler(signVerifyHandler).handler(this::bindAx);
     router.post(prefix + "/axb/bind").handler(signVerifyHandler).handler(this::bindAxb);
 
     vertx.createHttpServer()
@@ -133,6 +134,11 @@ public class OpenApiVerticle extends MicroServiceVerticle {
   }
 
   private void bindAxb(RoutingContext context) {
+    AxbBindRequest request = context.getBodyAsJson().mapTo(AxbBindRequest.class);
+    request.setAppId(context.request().getHeader("appId"));
+    relationService.bindAxb(request)
+      .onSuccess(resp -> context.response().putHeader("Content-Type", "application/json").end(ReturnResult.success(resp)))
+      .onFailure(err -> context.response().setStatusCode(500).end(ReturnResult.failed("bind axb relation failed")));
   }
 
 }
