@@ -48,7 +48,7 @@ public class RelationServiceImpl implements RelationService {
       args.add("1"); // 标注key有1个,vertx-redis-client的eval，key和arg是混在一起的
       args.add(String.format(CommConstant.VN_BIND_TIMES_POOL_WITH_AREA, request.getSerialNumber(), request.getAreaCode()));
     } else {
-      args.add("2"); // 标注key有1个
+      args.add("2"); // 标注key有2个
       args.add(String.format(CommConstant.VN_BIND_TIMES_POOL_WITH_AREA, request.getSerialNumber(), request.getAreaCode()));
       args.add(String.format(CommConstant.VN_BIND_TIMES_POOL, request.getSerialNumber()));
     }
@@ -101,10 +101,12 @@ public class RelationServiceImpl implements RelationService {
     }
     if(CommConstant.MUST_MATCH_AREA.equals(request.getAreaMatchMode())) {
       args.add("2"); // 标注key有2个,vertx-redis-client的eval，key和arg是混在一起的
-      args.add(String.format(CommConstant.VN_BIND_TIMES_POOL_WITH_AREA, request.getSerialNumber(), request.getAreaCode()));
       args.add(String.format(CommConstant.VN_DIALED_TIMES_POOL_WITH_AREA, request.getSerialNumber(), request.getAreaCode()));
+      args.add(String.format(CommConstant.VN_BIND_TIMES_POOL_WITH_AREA, request.getSerialNumber(), request.getAreaCode()));
     } else {
       args.add("4"); // 标注key有4个
+      args.add(String.format(CommConstant.VN_DIALED_TIMES_POOL_WITH_AREA, request.getSerialNumber(), request.getAreaCode()));
+      args.add(String.format(CommConstant.VN_BIND_TIMES_POOL_WITH_AREA, request.getSerialNumber(), request.getAreaCode()));
       args.add(String.format(CommConstant.VN_DIALED_TIMES_POOL, request.getSerialNumber()));
       args.add(String.format(CommConstant.VN_BIND_TIMES_POOL, request.getSerialNumber()));
     }
