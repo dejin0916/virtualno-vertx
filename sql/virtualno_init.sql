@@ -82,7 +82,6 @@ COMMENT ON COLUMN public.virtualno_ax_rel.area_code IS '区号';
 create index idx_virtualno_ax_rel_real_num on public.virtualno_ax_rel using btree (real_number);
 create index idx_virtualno_ax_rel_virtual_num on public.virtualno_ax_rel using btree (virtual_number);
 create index idx_virtualno_ax_rel_biz_id on public.virtualno_ax_rel using btree (business_id);
-create index idx_virtualno_ax_rel_biz_type on public.virtualno_ax_rel using btree (business_type);
 
 alter table public.virtualno_ax_rel owner to virtualno;
 grant all on table public.virtualno_ax_rel to virtualno;
@@ -225,3 +224,7 @@ alter table public.virtualno_pool_number add column virtual_type varchar(5);
 COMMENT ON COLUMN public.virtualno_pool_number.virtual_type IS '虚拟号类型，AX, AXB';
 
 ----------------------------------------------------------------------------------------------------------------
+alter table public.virtualno_user alter nickname drop not null;
+alter table public.virtualno_ax_rel add column business_type varchar(50);
+alter table public.virtualno_axb_rel add column business_type varchar(50);
+
