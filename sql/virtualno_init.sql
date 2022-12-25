@@ -136,12 +136,12 @@ grant all on table public.virtualno_axb_rel to virtualno;
 --管理端用户表
 CREATE TABLE public.virtualno_user (
    id_virtualno_user varchar(32) NOT NULL DEFAULT sys_guid(),
-   created_by varchar(100) NOT NULL,
+   created_by varchar(100) NULL,
    created_date timestamp NOT NULL DEFAULT 'NOW'::text::timestamp(0) with time zone,
-   updated_by varchar(100) NOT NULL,
+   updated_by varchar(100) NULL,
    updated_date timestamp NOT NULL DEFAULT 'NOW'::text::timestamp(0) with time zone,
    username varchar(255) NOT NULL,
-   nickname varchar(255) NOT NULL,
+   nickname varchar(255) NULL,
    password varchar(255) NOT NULL,
    contact varchar(255) NULL,
    constraint pk_virtualno_user primary key (id_virtualno_user)
